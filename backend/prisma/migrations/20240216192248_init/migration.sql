@@ -10,6 +10,7 @@ CREATE TABLE "ProductCategory" (
 CREATE TABLE "Product" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "name" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
     "price" REAL NOT NULL,
     "stock" INTEGER NOT NULL,
     "categoryId" TEXT NOT NULL,
@@ -17,3 +18,6 @@ CREATE TABLE "Product" (
     "updatedAt" DATETIME NOT NULL,
     CONSTRAINT "Product_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "ProductCategory" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "ProductCategory_name_key" ON "ProductCategory"("name");
