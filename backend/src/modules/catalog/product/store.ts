@@ -1,22 +1,24 @@
 import { PrismaClient } from '@prisma/client';
-import { Product } from './model';
+import { Product, CreateProductPayload, UpdateProductPayload } from './types';
 
-interface Store<T> {
-  create(product: T): Promise<T>;
-  findAll(): Promise<T[]>;
-  findOne(id: string): Promise<T | null>;
-  update(product: T): Promise<T>;
+interface Store {
+  create(
+    product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<Product>;
+  findAll(): Promise<Product[]>;
+  findOne(id: string): Promise<Product | null>;
+  update(product: UpdateProductPayload): Promise<Product>;
   delete(id: string): Promise<boolean>;
 }
 
-class ProductStore implements Store<Product> {
+class ProductStore implements Store {
   private prisma: PrismaClient;
 
   constructor(prisma: PrismaClient) {
     this.prisma = prisma;
   }
 
-  public async create(product: Product): Promise<Product> {
+  public async create(product: CreateProductPayload): Promise<Product> {
     return await this.prisma.product.create({
       data: {
         name: product.name,
@@ -44,7 +46,7 @@ class ProductStore implements Store<Product> {
     });
   }
 
-  public async update(product: Product): Promise<Product> {
+  public async update(product: UpdateProductPayload): Promise<Product> {
     return await this.prisma.product.update({
       where: {
         id: product.id,

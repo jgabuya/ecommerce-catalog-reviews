@@ -1,14 +1,14 @@
-import { Product } from './model';
+import { Product, CreateProductPayload, UpdateProductPayload } from './types';
 import { Store } from './store';
 
 export class ProductService {
-  private store: Store<Product>;
+  private store: Store;
 
-  constructor(store: Store<Product>) {
+  constructor(store: Store) {
     this.store = store;
   }
 
-  public async create(product: Product): Promise<Product> {
+  public async create(product: CreateProductPayload): Promise<Product> {
     return await this.store.create(product);
   }
 
@@ -20,7 +20,7 @@ export class ProductService {
     return await this.store.findOne(id);
   }
 
-  public async update(product: Product): Promise<Product> {
+  public async update(product: UpdateProductPayload): Promise<Product> {
     return await this.store.update(product);
   }
 
