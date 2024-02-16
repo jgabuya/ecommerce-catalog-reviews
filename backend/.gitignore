@@ -9,3 +9,7 @@ node_modules/
 
 # Build output
 dist/
+
+# sqlite
+prisma/dev.db
+prisma/dev.db-journal
