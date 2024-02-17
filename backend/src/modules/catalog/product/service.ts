@@ -1,6 +1,5 @@
 import { Product, CreateProductPayload, UpdateProductPayload } from './types';
 import { Store } from './store';
-
 export class ProductService {
   private store: Store;
 
@@ -22,6 +21,7 @@ export class ProductService {
 
   public async update(product: UpdateProductPayload): Promise<Product> {
     const existingProduct = await this.store.findOne(product.id);
+
     if (!existingProduct) {
       throw new Error(`Product with id ${product.id} not found`);
     }
@@ -31,6 +31,7 @@ export class ProductService {
 
   public async delete(id: string): Promise<boolean> {
     const existingProduct = await this.store.findOne(id);
+
     if (!existingProduct) {
       throw new Error(`Product with id ${id} not found`);
     }

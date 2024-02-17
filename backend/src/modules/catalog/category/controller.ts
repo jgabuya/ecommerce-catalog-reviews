@@ -1,20 +1,16 @@
 import { Router } from 'express';
-import { ProductService } from './service';
-import { ProductStore } from './store';
+import { ProductCategoryService } from './service';
+import { ProductCategoryStore } from './store';
 import { z, ZodError } from 'zod';
 
-const store = new ProductStore();
-const service = new ProductService(store);
+const store = new ProductCategoryStore();
+const service = new ProductCategoryService(store);
 const router = Router();
 
 router.post('/', async (req, res) => {
   // validate request body
   const schema = z.object({
     name: z.string(),
-    description: z.string(),
-    price: z.number(),
-    stock: z.number(),
-    categoryId: z.string(),
   });
 
   try {
@@ -36,13 +32,13 @@ router.post('/', async (req, res) => {
 });
 
 router.get('/', async (req, res) => {
-  const products = await service.findAll();
-  res.json(products);
+  const categories = await service.findAll();
+  res.json(categories);
 });
 
 router.get('/:id', async (req, res) => {
-  const product = await service.findOne(req.params.id);
-  res.json(product);
+  const category = await service.findOne(req.params.id);
+  res.json(category);
 });
 
 router.put('/:id', async (req, res) => {
@@ -50,10 +46,6 @@ router.put('/:id', async (req, res) => {
   const schema = z.object({
     id: z.string(),
     name: z.string(),
-    description: z.string(),
-    price: z.number(),
-    stock: z.number(),
-    categoryId: z.string(),
   });
 
   try {
@@ -67,8 +59,8 @@ router.put('/:id', async (req, res) => {
   }
 
   try {
-    const product = await service.update({ id: req.params.id, ...req.body });
-    res.json(product);
+    const category = await service.update({ id: req.params.id, ...req.body });
+    res.json(category);
   } catch (error) {
     if (error instanceof Error) {
       return res.status(400).json({ error: error.message });
@@ -91,4 +83,4 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-export { router as productRouter };
+export { router as productCategoryRouter };

@@ -44,6 +44,7 @@
 import express from 'express';
 import { json } from 'body-parser';
 import { productRouter } from './modules/catalog/product/controller';
+import { productCategoryRouter } from './modules/catalog/category/controller';
 import { prismaClient } from '../prisma/client';
 import morgan from 'morgan';
 import http from 'http';
@@ -55,6 +56,7 @@ app.use(json());
 app.use(morgan('dev'));
 
 app.use('/products', productRouter);
+app.use('/categories', productCategoryRouter);
 
 app.listen(3000, () => {
   console.log('Server is running on port 3000');
