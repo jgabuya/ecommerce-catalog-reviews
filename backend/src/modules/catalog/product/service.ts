@@ -21,10 +21,20 @@ export class ProductService {
   }
 
   public async update(product: UpdateProductPayload): Promise<Product> {
+    const existingProduct = await this.store.findOne(product.id);
+    if (!existingProduct) {
+      throw new Error(`Product with id ${product.id} not found`);
+    }
+
     return await this.store.update(product);
   }
 
   public async delete(id: string): Promise<boolean> {
+    const existingProduct = await this.store.findOne(id);
+    if (!existingProduct) {
+      throw new Error(`Product with id ${id} not found`);
+    }
+
     return await this.store.delete(id);
   }
 }

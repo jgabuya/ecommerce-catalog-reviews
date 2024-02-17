@@ -1,6 +1,5 @@
-import { PrismaClient } from '@prisma/client';
+import { prismaClient } from '../../../../prisma/client';
 import { Product, CreateProductPayload, UpdateProductPayload } from './types';
-
 interface Store {
   create(
     product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>,
@@ -12,14 +11,8 @@ interface Store {
 }
 
 class ProductStore implements Store {
-  private prisma: PrismaClient;
-
-  constructor(prisma: PrismaClient) {
-    this.prisma = prisma;
-  }
-
   public async create(product: CreateProductPayload): Promise<Product> {
-    return await this.prisma.product.create({
+    return await prismaClient.product.create({
       data: {
         name: product.name,
         description: product.description,
@@ -35,11 +28,11 @@ class ProductStore implements Store {
   }
 
   public async findAll(): Promise<Product[]> {
-    return await this.prisma.product.findMany();
+    return await prismaClient.product.findMany();
   }
 
   public async findOne(id: string): Promise<Product | null> {
-    return await this.prisma.product.findUnique({
+    return await prismaClient.product.findUnique({
       where: {
         id: id,
       },
@@ -47,7 +40,7 @@ class ProductStore implements Store {
   }
 
   public async update(product: UpdateProductPayload): Promise<Product> {
-    return await this.prisma.product.update({
+    return await prismaClient.product.update({
       where: {
         id: product.id,
       },
@@ -66,7 +59,7 @@ class ProductStore implements Store {
   }
 
   public async delete(id: string): Promise<boolean> {
-    await this.prisma.product.delete({
+    await prismaClient.product.delete({
       where: {
         id: id,
       },
