@@ -14,7 +14,7 @@ interface Store {
 }
 
 class ProductCategoryStore implements Store {
-  public async create(
+  async create(
     category: CreateProductCategoryPayload,
   ): Promise<ProductCategory> {
     return await prismaClient.productCategory.create({
@@ -24,11 +24,11 @@ class ProductCategoryStore implements Store {
     });
   }
 
-  public async findAll(): Promise<ProductCategory[]> {
+  async findAll(): Promise<ProductCategory[]> {
     return await prismaClient.productCategory.findMany();
   }
 
-  public async findOne(id: string): Promise<ProductCategory | null> {
+  async findOne(id: string): Promise<ProductCategory | null> {
     return await prismaClient.productCategory.findUnique({
       where: {
         id: id,
@@ -36,7 +36,7 @@ class ProductCategoryStore implements Store {
     });
   }
 
-  public async update(
+  async update(
     category: UpdateProductCategoryPayload,
   ): Promise<ProductCategory> {
     return await prismaClient.productCategory.update({
@@ -49,7 +49,7 @@ class ProductCategoryStore implements Store {
     });
   }
 
-  public async delete(id: string): Promise<boolean> {
+  async delete(id: string): Promise<boolean> {
     await prismaClient.productCategory.delete({
       where: {
         id: id,

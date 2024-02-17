@@ -7,19 +7,19 @@ export class ProductService {
     this.store = store;
   }
 
-  public async create(product: CreateProductPayload): Promise<Product> {
+  async create(product: CreateProductPayload): Promise<Product> {
     return await this.store.create(product);
   }
 
-  public async findAll(): Promise<Product[]> {
+  async findAll(): Promise<Product[]> {
     return await this.store.findAll();
   }
 
-  public async findOne(id: string): Promise<Product | null> {
+  async findOne(id: string): Promise<Product | null> {
     return await this.store.findOne(id);
   }
 
-  public async update(product: UpdateProductPayload): Promise<Product> {
+  async update(product: UpdateProductPayload): Promise<Product> {
     const existingProduct = await this.store.findOne(product.id);
 
     if (!existingProduct) {
@@ -29,7 +29,7 @@ export class ProductService {
     return await this.store.update(product);
   }
 
-  public async delete(id: string): Promise<boolean> {
+  async delete(id: string): Promise<boolean> {
     const existingProduct = await this.store.findOne(id);
 
     if (!existingProduct) {
