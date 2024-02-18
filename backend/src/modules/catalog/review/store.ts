@@ -7,7 +7,6 @@ import { prismaClient } from '../../../../prisma/client';
 
 interface Store {
   create(review: CreateProductReviewPayload): Promise<ProductReview>;
-  findAll(): Promise<ProductReview[]>;
   findMany(query?: {
     productId: string;
     page?: number;
@@ -34,10 +33,6 @@ class ProductReviewStore implements Store {
         },
       },
     });
-  }
-
-  async findAll(): Promise<ProductReview[]> {
-    return await prismaClient.productReview.findMany();
   }
 
   async findMany(query?: {
