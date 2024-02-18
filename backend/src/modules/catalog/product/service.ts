@@ -1,6 +1,16 @@
 import { Product, CreateProductPayload, UpdateProductPayload } from './types';
 import { Store } from './store';
-export class ProductService {
+
+// extract an interface from ProductService
+export interface ProductServiceInterface {
+  create(product: CreateProductPayload): Promise<Product>;
+  findAll(): Promise<Product[]>;
+  findOne(id: string): Promise<Product | null>;
+  update(product: UpdateProductPayload): Promise<Product>;
+  delete(id: string): Promise<boolean>;
+}
+
+export class ProductService implements ProductServiceInterface {
   private store: Store;
 
   constructor(store: Store) {

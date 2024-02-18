@@ -28,7 +28,11 @@ class ProductStore implements Store {
   }
 
   async findAll(): Promise<Product[]> {
-    return await prismaClient.product.findMany();
+    return await prismaClient.product.findMany({
+      include: {
+        category: true,
+      },
+    });
   }
 
   async findOne(id: string): Promise<Product | null> {

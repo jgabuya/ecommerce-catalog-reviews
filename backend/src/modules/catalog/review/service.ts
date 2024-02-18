@@ -4,15 +4,25 @@ import {
   CreateProductReviewPayload,
   UpdateProductReviewPayload,
 } from './types';
+import { ProductServiceInterface } from '../product/service';
 
 class ProductReviewService {
   store: Store;
+  productService: ProductServiceInterface;
 
-  constructor(store: Store) {
+  constructor(store: Store, productService: ProductServiceInterface) {
     this.store = store;
+    this.productService = productService;
   }
 
   async create(review: CreateProductReviewPayload): Promise<ProductReview> {
+    // check if productId exists
+    const product = await this.productService.findOne(review.productId);
+
+    if (!product) {
+      throw new Error(`Product with id ${review.productId} not found`);
+    }
+
     return await this.store.create(review);
   }
 

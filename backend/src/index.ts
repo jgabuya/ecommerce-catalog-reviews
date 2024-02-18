@@ -1,50 +1,8 @@
-// // connect to prisma and add a product
-// import { PrismaClient } from '@prisma/client';
-
-// const prisma = new PrismaClient();
-
-// async function main() {
-//   // await prisma.productCategory.create({
-//   //   data: {
-//   //     name: 'Computers',
-//   //   },
-//   // });
-
-//   const categories = await prisma.productCategory.findMany();
-
-//   await prisma.product.create({
-//     data: {
-//       name: 'Laptop',
-//       description: 'A laptop',
-//       price: 999.99,
-//       stock: 10,
-//       category: {
-//         connect: {
-//           id: categories[0].id,
-//         },
-//       },
-//     },
-//   });
-
-//   const products = await prisma.product.findMany();
-
-//   console.log('Categories', categories);
-//   console.log('Products', products);
-// }
-
-// main()
-//   .catch(e => {
-//     throw e;
-//   })
-//   .finally(async () => {
-//     await prisma.$disconnect();
-//   });
-
-// create express server
 import express from 'express';
 import { json } from 'body-parser';
 import { productRouter } from './modules/catalog/product/controller';
 import { productCategoryRouter } from './modules/catalog/category/controller';
+import { productReviewRouter } from './modules/catalog/review/controller';
 import { prismaClient } from '../prisma/client';
 import morgan from 'morgan';
 import http from 'http';
@@ -55,8 +13,9 @@ const server = http.createServer(app);
 app.use(json());
 app.use(morgan('dev'));
 
-app.use('/products', productRouter);
 app.use('/categories', productCategoryRouter);
+app.use('/products', productRouter);
+app.use('/products/:productId/reviews', productReviewRouter);
 
 app.listen(3000, () => {
   console.log('Server is running on port 3000');
