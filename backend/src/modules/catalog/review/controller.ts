@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { ProductReviewService } from './service';
 import { ProductReviewStore } from './store';
 import { ProductStore } from '../product/store';
@@ -16,7 +16,13 @@ const userService = new UserService(userStore);
 const service = new ProductReviewService(store, productService, userService);
 const router = Router({ mergeParams: true });
 
-router.post('/', authenticateToken, async (req, res) => {
+router.post('/', authenticateToken, handleCreate);
+router.get('/', handleList);
+router.get('/:id', handleRead);
+router.put('/:id', authenticateToken, handleUpdate);
+router.delete('/:id', authenticateToken, handleDelete);
+
+async function handleCreate(req: Request, res: Response) {
   // validate request body
   const schema = z.object({
     productId: z.string(),
@@ -44,9 +50,9 @@ router.post('/', authenticateToken, async (req, res) => {
 
     res.status(500).json({ error });
   }
-});
+}
 
-router.get('/', async (req, res) => {
+async function handleList(req: Request, res: Response) {
   // validate query
   const schema = z.object({
     page: z.number().optional(),
@@ -92,14 +98,14 @@ router.get('/', async (req, res) => {
 
     res.status(500).json({ error });
   }
-});
+}
 
-router.get('/:id', async (req, res) => {
+async function handleRead(req: Request, res: Response) {
   const productReview = await service.findOne(req.params.id);
   res.json(productReview);
-});
+}
 
-router.put('/:id', authenticateToken, async (req, res) => {
+async function handleUpdate(req: Request, res: Response) {
   // validate request body
   const schema = z.object({
     id: z.string(),
@@ -134,9 +140,9 @@ router.put('/:id', authenticateToken, async (req, res) => {
 
     return res.status(400).json({ error });
   }
-});
+}
 
-router.delete('/:id', authenticateToken, async (req, res) => {
+async function handleDelete(req: Request, res: Response) {
   try {
     const success = await service.delete(req.params.id);
     res.json(success);
@@ -147,6 +153,6 @@ router.delete('/:id', authenticateToken, async (req, res) => {
 
     return res.status(400).json({ error });
   }
-});
+}
 
 export { router as productReviewRouter };

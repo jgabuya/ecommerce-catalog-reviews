@@ -12,7 +12,10 @@ const router = Router({ mergeParams: true });
 const store = new UserStore();
 const userService = new UserService(store);
 
-router.post('/login', async (req: Request, res: Response) => {
+router.post('/login', handleLogin);
+router.post('/register', handleRegister);
+
+async function handleLogin(req: Request, res: Response) {
   try {
     const user = await userService.login(req.body.email, req.body.password);
 
@@ -25,9 +28,9 @@ router.post('/login', async (req: Request, res: Response) => {
   } catch (e) {
     res.status(400).send('Invalid credentials');
   }
-});
+}
 
-router.post('/register', async (req: Request, res: Response) => {
+async function handleRegister(req: Request, res: Response) {
   // validate request
   const schema = z.object({
     email: z.string().email(),
@@ -47,7 +50,7 @@ router.post('/register', async (req: Request, res: Response) => {
     console.error(e);
     res.status(500).send();
   }
-});
+}
 
 // Middleware to authenticate JWT
 function authenticateToken(req: Request, res: Response, next: NextFunction) {
