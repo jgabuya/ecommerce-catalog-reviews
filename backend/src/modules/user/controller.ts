@@ -1,6 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { UserStore } from './store';
-import bcrypt from 'bcryptjs';
+import { UserService } from './service';
 import jwt from 'jsonwebtoken';
 import { omit } from 'lodash';
 import dotenv from 'dotenv';
@@ -10,26 +10,20 @@ dotenv.config();
 
 const router = Router({ mergeParams: true });
 const store = new UserStore();
+const userService = new UserService(store);
 
 router.post('/login', async (req: Request, res: Response) => {
-  const user = await store.findByEmail(req.body.email);
-
-  if (!user) {
-    return res.status(400).send('Cannot find user');
-  }
-
   try {
-    if (bcrypt.compareSync(req.body.password, user.password)) {
-      const accessToken = jwt.sign(
-        omit(user, 'password'),
-        process.env.ACCESS_TOKEN_SECRET as string,
-      );
-      res.json({ accessToken });
-    } else {
-      res.send('Not Allowed');
-    }
-  } catch {
-    res.status(500).send();
+    const user = await userService.login(req.body.email, req.body.password);
+
+    const accessToken = jwt.sign(
+      omit(user, 'password'),
+      process.env.ACCESS_TOKEN_SECRET as string,
+    );
+
+    res.json({ ...user, accessToken });
+  } catch (e) {
+    res.status(400).send('Invalid credentials');
   }
 });
 
@@ -47,12 +41,10 @@ router.post('/register', async (req: Request, res: Response) => {
   }
 
   try {
-    const user = req.body;
-    user.password = bcrypt.hashSync(user.password, 10);
-    const newUser = await store.create(user);
-
+    const newUser = await userService.register(req.body);
     res.json(newUser);
   } catch (e) {
+    console.error(e);
     res.status(500).send();
   }
 });

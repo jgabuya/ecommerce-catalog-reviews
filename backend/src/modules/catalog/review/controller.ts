@@ -3,13 +3,17 @@ import { ProductReviewService } from './service';
 import { ProductReviewStore } from './store';
 import { ProductStore } from '../product/store';
 import { ProductService } from '../product/service';
+import { UserStore } from '../../user/store';
+import { UserService } from '../../user/service';
 import { authenticateToken } from '../../user/controller';
 import { z, ZodError } from 'zod';
 
 const store = new ProductReviewStore();
 const productStore = new ProductStore();
+const userStore = new UserStore();
 const productService = new ProductService(productStore);
-const service = new ProductReviewService(store, productService);
+const userService = new UserService(userStore);
+const service = new ProductReviewService(store, productService, userService);
 const router = Router({ mergeParams: true });
 
 router.post('/', authenticateToken, async (req, res) => {
@@ -114,10 +118,13 @@ router.put('/:id', authenticateToken, async (req, res) => {
   }
 
   try {
-    const productReview = await service.update({
-      id: req.params.id,
-      ...req.body,
-    });
+    const productReview = await service.update(
+      {
+        id: req.params.id,
+        ...req.body,
+      },
+      (req as any).user,
+    );
 
     res.json(productReview);
   } catch (error) {

@@ -5,9 +5,10 @@ interface Store {
   create(user: CreateUserPayload): Promise<User>;
   findOne(id: string): Promise<User | null>;
   findByEmail(email: string): Promise<User | null>;
+  findById(id: string): Promise<User | null>;
 }
 
-export class UserStore implements Store {
+class UserStore implements Store {
   async create(user: CreateUserPayload) {
     return prismaClient.user.create({ data: user });
   }
@@ -19,4 +20,10 @@ export class UserStore implements Store {
   async findByEmail(email: string) {
     return prismaClient.user.findUnique({ where: { email } });
   }
+
+  async findById(id: string) {
+    return prismaClient.user.findUnique({ where: { id } });
+  }
 }
+
+export { UserStore, Store };

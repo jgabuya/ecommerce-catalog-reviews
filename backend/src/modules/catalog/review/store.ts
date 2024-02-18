@@ -31,6 +31,11 @@ class ProductReviewStore implements Store {
             id: review.productId,
           },
         },
+        user: {
+          connect: {
+            id: review.userId,
+          },
+        },
       },
     });
   }

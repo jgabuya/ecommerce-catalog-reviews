@@ -2,7 +2,7 @@ import { ProductReview } from '@prisma/client';
 
 export type CreateProductReviewPayload = Pick<
   ProductReview,
-  'rating' | 'comment' | 'productId'
+  'rating' | 'comment' | 'productId' | 'userId'
 >;
 
 export type UpdateProductReviewPayload = Pick<
