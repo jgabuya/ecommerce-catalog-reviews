@@ -3,6 +3,7 @@ import { json } from 'body-parser';
 import { productRouter } from './modules/catalog/product/controller';
 import { productCategoryRouter } from './modules/catalog/category/controller';
 import { productReviewRouter } from './modules/catalog/review/controller';
+import { userRouter } from './modules/user/controller';
 import { prismaClient } from '../prisma/client';
 import morgan from 'morgan';
 import http from 'http';
@@ -16,6 +17,7 @@ app.use(morgan('dev'));
 app.use('/categories', productCategoryRouter);
 app.use('/products', productRouter);
 app.use('/products/:productId/reviews', productReviewRouter);
+app.use('/auth', userRouter);
 
 app.listen(3000, () => {
   console.log('Server is running on port 3000');

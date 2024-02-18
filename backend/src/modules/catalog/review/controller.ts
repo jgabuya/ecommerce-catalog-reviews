@@ -3,6 +3,7 @@ import { ProductReviewService } from './service';
 import { ProductReviewStore } from './store';
 import { ProductStore } from '../product/store';
 import { ProductService } from '../product/service';
+import { authenticateToken } from '../../user/controller';
 import { z, ZodError } from 'zod';
 
 const store = new ProductReviewStore();
@@ -11,7 +12,7 @@ const productService = new ProductService(productStore);
 const service = new ProductReviewService(store, productService);
 const router = Router({ mergeParams: true });
 
-router.post('/', async (req, res) => {
+router.post('/', authenticateToken, async (req, res) => {
   // validate request body
   const schema = z.object({
     productId: z.string(),
@@ -94,7 +95,7 @@ router.get('/:id', async (req, res) => {
   res.json(productReview);
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', authenticateToken, async (req, res) => {
   // validate request body
   const schema = z.object({
     id: z.string(),
@@ -128,7 +129,7 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authenticateToken, async (req, res) => {
   try {
     const success = await service.delete(req.params.id);
     res.json(success);
