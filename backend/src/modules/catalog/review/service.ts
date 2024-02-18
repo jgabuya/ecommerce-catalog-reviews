@@ -84,7 +84,7 @@ class ProductReviewService {
     return await this.store.update(review)
   }
 
-  async delete(id: string): Promise<Boolean> {
+  async delete(id: string): Promise<boolean> {
     const existingReview = await this.store.findOne(id)
 
     if (!existingReview) {
