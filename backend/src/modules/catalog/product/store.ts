@@ -1,13 +1,13 @@
-import { prismaClient } from '../../../../prisma/client';
-import { Product, CreateProductPayload, UpdateProductPayload } from './types';
+import { prismaClient } from '../../../../prisma/client'
+import { Product, CreateProductPayload, UpdateProductPayload } from './types'
 interface Store {
   create(
     product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>,
-  ): Promise<Product>;
-  findAll(): Promise<Product[]>;
-  findOne(id: string): Promise<Product | null>;
-  update(product: UpdateProductPayload): Promise<Product>;
-  delete(id: string): Promise<boolean>;
+  ): Promise<Product>
+  findAll(): Promise<Product[]>
+  findOne(id: string): Promise<Product | null>
+  update(product: UpdateProductPayload): Promise<Product>
+  delete(id: string): Promise<boolean>
 }
 
 class ProductStore implements Store {
@@ -24,7 +24,7 @@ class ProductStore implements Store {
           },
         },
       },
-    });
+    })
   }
 
   async findAll(): Promise<Product[]> {
@@ -32,7 +32,7 @@ class ProductStore implements Store {
       include: {
         category: true,
       },
-    });
+    })
   }
 
   async findOne(id: string): Promise<Product | null> {
@@ -40,7 +40,7 @@ class ProductStore implements Store {
       where: {
         id: id,
       },
-    });
+    })
   }
 
   async update(product: UpdateProductPayload): Promise<Product> {
@@ -59,7 +59,7 @@ class ProductStore implements Store {
           },
         },
       },
-    });
+    })
   }
 
   async delete(id: string): Promise<boolean> {
@@ -67,10 +67,10 @@ class ProductStore implements Store {
       where: {
         id: id,
       },
-    });
+    })
 
-    return true;
+    return true
   }
 }
 
-export { Store, ProductStore };
+export { Store, ProductStore }

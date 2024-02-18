@@ -2,15 +2,15 @@ import {
   ProductCategory,
   CreateProductCategoryPayload,
   UpdateProductCategoryPayload,
-} from './types';
-import { prismaClient } from '../../../../prisma/client';
+} from './types'
+import { prismaClient } from '../../../../prisma/client'
 
 interface Store {
-  create(category: CreateProductCategoryPayload): Promise<ProductCategory>;
-  findAll(): Promise<ProductCategory[]>;
-  findOne(id: string): Promise<ProductCategory | null>;
-  update(category: UpdateProductCategoryPayload): Promise<ProductCategory>;
-  delete(id: string): Promise<boolean>;
+  create(category: CreateProductCategoryPayload): Promise<ProductCategory>
+  findAll(): Promise<ProductCategory[]>
+  findOne(id: string): Promise<ProductCategory | null>
+  update(category: UpdateProductCategoryPayload): Promise<ProductCategory>
+  delete(id: string): Promise<boolean>
 }
 
 class ProductCategoryStore implements Store {
@@ -21,11 +21,11 @@ class ProductCategoryStore implements Store {
       data: {
         name: category.name,
       },
-    });
+    })
   }
 
   async findAll(): Promise<ProductCategory[]> {
-    return await prismaClient.productCategory.findMany();
+    return await prismaClient.productCategory.findMany()
   }
 
   async findOne(id: string): Promise<ProductCategory | null> {
@@ -33,7 +33,7 @@ class ProductCategoryStore implements Store {
       where: {
         id: id,
       },
-    });
+    })
   }
 
   async update(
@@ -46,7 +46,7 @@ class ProductCategoryStore implements Store {
       data: {
         name: category.name,
       },
-    });
+    })
   }
 
   async delete(id: string): Promise<boolean> {
@@ -54,9 +54,9 @@ class ProductCategoryStore implements Store {
       where: {
         id: id,
       },
-    });
-    return true;
+    })
+    return true
   }
 }
 
-export { Store, ProductCategoryStore };
+export { Store, ProductCategoryStore }

@@ -1,15 +1,15 @@
-import { ProductReviewService } from './service';
-import { Store } from './store';
+import { ProductReviewService } from './service'
+import { Store } from './store'
 import {
   ProductReview,
   CreateProductReviewPayload,
   UpdateProductReviewPayload,
-} from './types';
-import { omit } from 'lodash';
+} from './types'
+import { omit } from 'lodash'
 
 describe('ProductReviewService', () => {
-  let store: jest.Mocked<Store>;
-  let service: ProductReviewService;
+  let store: jest.Mocked<Store>
+  let service: ProductReviewService
 
   const mockProductReviews: ProductReview[] = [
     {
@@ -47,11 +47,11 @@ describe('ProductReviewService', () => {
       comment: 'Test Comment',
       userId: '2',
     },
-  ].map(review => ({
+  ].map((review) => ({
     ...review,
     createdAt: new Date(),
     updatedAt: new Date(),
-  }));
+  }))
 
   const mockUser = {
     id: '1',
@@ -59,7 +59,7 @@ describe('ProductReviewService', () => {
     createdAt: new Date(),
     updatedAt: new Date(),
     password: 'hashed-password',
-  };
+  }
 
   beforeEach(() => {
     store = {
@@ -70,13 +70,13 @@ describe('ProductReviewService', () => {
         .mockImplementation(
           async (id: string): Promise<ProductReview | null> => {
             return Promise.resolve(
-              mockProductReviews.find(review => id === review.id) || null,
-            );
+              mockProductReviews.find((review) => id === review.id) || null,
+            )
           },
         ),
       update: jest.fn().mockResolvedValue(mockProductReviews[0]),
       delete: jest.fn(),
-    };
+    }
 
     const productService = {
       create: jest.fn(),
@@ -84,16 +84,16 @@ describe('ProductReviewService', () => {
       findOne: jest.fn(),
       update: jest.fn(),
       delete: jest.fn(),
-    };
+    }
 
     const userService = {
       login: jest.fn(),
       register: jest.fn(),
       findById: jest.fn(),
-    };
+    }
 
-    service = new ProductReviewService(store, productService, userService);
-  });
+    service = new ProductReviewService(store, productService, userService)
+  })
 
   describe('create', () => {
     it('should create a review', async () => {
@@ -101,9 +101,9 @@ describe('ProductReviewService', () => {
         'id',
         'createdAt',
         'updatedAt',
-      ]);
+      ])
 
-      const product: CreateProductReviewPayload = mockProductPayload;
+      const product: CreateProductReviewPayload = mockProductPayload
 
       jest.spyOn(service.productService, 'findOne').mockResolvedValue({
         id: '1',
@@ -114,37 +114,37 @@ describe('ProductReviewService', () => {
         categoryId: '1',
         createdAt: new Date(),
         updatedAt: new Date(),
-      });
+      })
 
-      jest.spyOn(service.userService, 'findById').mockResolvedValue(mockUser);
-      jest.spyOn(service.store, 'findMany').mockResolvedValue([]);
+      jest.spyOn(service.userService, 'findById').mockResolvedValue(mockUser)
+      jest.spyOn(service.store, 'findMany').mockResolvedValue([])
 
-      await service.create(product);
-      expect(store.create).toHaveBeenCalledWith(product);
-    });
+      await service.create(product)
+      expect(store.create).toHaveBeenCalledWith(product)
+    })
 
     it('should not create a review if the given productId is not found', async () => {
       const mockProductPayload = omit(mockProductReviews[0], [
         'id',
         'createdAt',
         'updatedAt',
-      ]);
+      ])
 
-      const product: CreateProductReviewPayload = mockProductPayload;
+      const product: CreateProductReviewPayload = mockProductPayload
 
-      jest.spyOn(service.productService, 'findOne').mockResolvedValue(null);
+      jest.spyOn(service.productService, 'findOne').mockResolvedValue(null)
 
-      await expect(service.create(product)).rejects.toThrow();
-    });
+      await expect(service.create(product)).rejects.toThrow()
+    })
 
     it('should not create a review if the given userId is not found', async () => {
       const mockProductPayload = omit(mockProductReviews[0], [
         'id',
         'createdAt',
         'updatedAt',
-      ]);
+      ])
 
-      const product: CreateProductReviewPayload = mockProductPayload;
+      const product: CreateProductReviewPayload = mockProductPayload
 
       jest.spyOn(service.productService, 'findOne').mockResolvedValue({
         id: '1',
@@ -155,21 +155,21 @@ describe('ProductReviewService', () => {
         categoryId: '1',
         createdAt: new Date(),
         updatedAt: new Date(),
-      });
+      })
 
-      jest.spyOn(service.userService, 'findById').mockResolvedValue(null);
+      jest.spyOn(service.userService, 'findById').mockResolvedValue(null)
 
-      await expect(service.create(product)).rejects.toThrow();
-    });
+      await expect(service.create(product)).rejects.toThrow()
+    })
 
     it('should not create a review if the user already reviewed the product', async () => {
       const mockProductPayload = omit(mockProductReviews[0], [
         'id',
         'createdAt',
         'updatedAt',
-      ]);
+      ])
 
-      const product: CreateProductReviewPayload = mockProductPayload;
+      const product: CreateProductReviewPayload = mockProductPayload
 
       jest.spyOn(service.productService, 'findOne').mockResolvedValue({
         id: '1',
@@ -180,16 +180,16 @@ describe('ProductReviewService', () => {
         categoryId: '1',
         createdAt: new Date(),
         updatedAt: new Date(),
-      });
+      })
 
-      jest.spyOn(service.userService, 'findById').mockResolvedValue(mockUser);
+      jest.spyOn(service.userService, 'findById').mockResolvedValue(mockUser)
       jest
         .spyOn(service.store, 'findMany')
-        .mockResolvedValue([mockProductReviews[0]]);
+        .mockResolvedValue([mockProductReviews[0]])
 
-      await expect(service.create(product)).rejects.toThrow();
-    });
-  });
+      await expect(service.create(product)).rejects.toThrow()
+    })
+  })
 
   it('should find many reviews', async () => {
     const query = {
@@ -197,17 +197,17 @@ describe('ProductReviewService', () => {
       page: 1,
       limit: 5,
       sort: 'createdAt' as 'rating' | 'createdAt' | 'updatedAt',
-    };
+    }
 
-    await service.findMany(query);
-    expect(store.findMany).toHaveBeenCalledWith(query);
-  });
+    await service.findMany(query)
+    expect(store.findMany).toHaveBeenCalledWith(query)
+  })
 
   it('should find one review', async () => {
-    const id = '1';
-    await service.findOne(id);
-    expect(store.findOne).toHaveBeenCalledWith(id);
-  });
+    const id = '1'
+    await service.findOne(id)
+    expect(store.findOne).toHaveBeenCalledWith(id)
+  })
 
   describe('update', () => {
     it('should update a review', async () => {
@@ -215,11 +215,11 @@ describe('ProductReviewService', () => {
         'createdAt',
         'updatedAt',
         'productId',
-      ]);
+      ])
 
-      await service.update(review, mockUser);
-      expect(store.update).toHaveBeenCalledWith(review);
-    });
+      await service.update(review, mockUser)
+      expect(store.update).toHaveBeenCalledWith(review)
+    })
 
     it('should not update a review if the given id is not found', async () => {
       const review: UpdateProductReviewPayload = omit(
@@ -228,20 +228,20 @@ describe('ProductReviewService', () => {
           id: 'non-existing-id',
         },
         ['createdAt', 'updatedAt'],
-      );
+      )
 
-      await expect(service.update(review, mockUser)).rejects.toThrow();
-    });
-  });
+      await expect(service.update(review, mockUser)).rejects.toThrow()
+    })
+  })
 
   it('should delete a review', async () => {
-    const id = '1';
-    await service.delete(id);
-    expect(store.delete).toHaveBeenCalledWith(id);
-  });
+    const id = '1'
+    await service.delete(id)
+    expect(store.delete).toHaveBeenCalledWith(id)
+  })
 
   it('should not delete a review if the given id is not found', async () => {
-    const id = 'non-existing-id';
-    await expect(service.delete(id)).rejects.toThrow();
-  });
-});
+    const id = 'non-existing-id'
+    await expect(service.delete(id)).rejects.toThrow()
+  })
+})

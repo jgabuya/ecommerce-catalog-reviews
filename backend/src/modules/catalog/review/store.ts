@@ -2,22 +2,22 @@ import {
   ProductReview,
   CreateProductReviewPayload,
   UpdateProductReviewPayload,
-} from './types';
-import { prismaClient } from '../../../../prisma/client';
+} from './types'
+import { prismaClient } from '../../../../prisma/client'
 
 interface Store {
-  create(review: CreateProductReviewPayload): Promise<ProductReview>;
+  create(review: CreateProductReviewPayload): Promise<ProductReview>
   findMany(query?: {
-    productId: string;
-    page?: number;
-    limit?: number;
-    sort?: string;
-    order?: 'asc' | 'desc';
-    filter?: Partial<ProductReview>;
-  }): Promise<ProductReview[]>;
-  findOne(id: string): Promise<ProductReview | null>;
-  update(review: UpdateProductReviewPayload): Promise<ProductReview>;
-  delete(id: string): Promise<boolean>;
+    productId: string
+    page?: number
+    limit?: number
+    sort?: string
+    order?: 'asc' | 'desc'
+    filter?: Partial<ProductReview>
+  }): Promise<ProductReview[]>
+  findOne(id: string): Promise<ProductReview | null>
+  update(review: UpdateProductReviewPayload): Promise<ProductReview>
+  delete(id: string): Promise<boolean>
 }
 
 class ProductReviewStore implements Store {
@@ -37,16 +37,16 @@ class ProductReviewStore implements Store {
           },
         },
       },
-    });
+    })
   }
 
   async findMany(query?: {
-    productId: string;
-    page?: number;
-    limit?: number;
-    sort?: 'createdAt' | 'updatedAt' | 'rating';
-    order?: 'asc' | 'desc';
-    filter?: Pick<ProductReview, 'rating'>;
+    productId: string
+    page?: number
+    limit?: number
+    sort?: 'createdAt' | 'updatedAt' | 'rating'
+    order?: 'asc' | 'desc'
+    filter?: Pick<ProductReview, 'rating'>
   }): Promise<ProductReview[]> {
     const {
       page = 1,
@@ -55,20 +55,20 @@ class ProductReviewStore implements Store {
       order = 'desc',
       filter,
       productId,
-    } = query || {};
-    const skip = (page - 1) * limit;
-    const take = limit;
-    const where: Partial<ProductReview> = { productId };
-    let orderBy;
+    } = query || {}
+    const skip = (page - 1) * limit
+    const take = limit
+    const where: Partial<ProductReview> = { productId }
+    let orderBy
 
     if (sort) {
       orderBy = {
         [sort]: order,
-      };
+      }
     }
 
     if (filter) {
-      where.rating = filter.rating;
+      where.rating = filter.rating
     }
 
     return await prismaClient.productReview.findMany({
@@ -76,7 +76,7 @@ class ProductReviewStore implements Store {
       take,
       orderBy,
       where,
-    });
+    })
   }
 
   async findOne(id: string): Promise<ProductReview | null> {
@@ -84,7 +84,7 @@ class ProductReviewStore implements Store {
       where: {
         id: id,
       },
-    });
+    })
   }
 
   async update(review: UpdateProductReviewPayload): Promise<ProductReview> {
@@ -96,7 +96,7 @@ class ProductReviewStore implements Store {
         rating: review.rating,
         comment: review.comment,
       },
-    });
+    })
   }
 
   async delete(id: string): Promise<boolean> {
@@ -104,9 +104,9 @@ class ProductReviewStore implements Store {
       where: {
         id: id,
       },
-    });
-    return true;
+    })
+    return true
   }
 }
 
-export { Store, ProductReviewStore };
+export { Store, ProductReviewStore }

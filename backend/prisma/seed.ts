@@ -1,11 +1,11 @@
-import { PrismaClient } from '@prisma/client';
-import { ProductCategory } from '../src/modules/catalog/category/types';
-import { CreateProductPayload } from '../src/modules/catalog/product/types';
-import { Product } from '../src/modules/catalog/product/types';
-import { User, CreateUserPayload } from '../src/modules/user/types';
-import bcrypt from 'bcryptjs';
+import { PrismaClient } from '@prisma/client'
+import { ProductCategory } from '../src/modules/catalog/category/types'
+import { CreateProductPayload } from '../src/modules/catalog/product/types'
+import { Product } from '../src/modules/catalog/product/types'
+import { User, CreateUserPayload } from '../src/modules/user/types'
+import bcrypt from 'bcryptjs'
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
 async function createUsers(): Promise<User[]> {
   const usersPayload: CreateUserPayload[] = [
@@ -17,33 +17,33 @@ async function createUsers(): Promise<User[]> {
       email: 'test2@mail.com',
       password: bcrypt.hashSync('123456', 10),
     },
-  ];
+  ]
 
   const users = await Promise.all(
-    usersPayload.map(user => {
+    usersPayload.map((user) => {
       return prisma.user.create({
         data: user,
-      });
+      })
     }),
-  );
+  )
 
-  return users;
+  return users
 }
 
 async function createCategories() {
-  const categoryNames = ['Electronics', 'Kitchen', 'Books'];
+  const categoryNames = ['Electronics', 'Kitchen', 'Books']
 
   const categories = await Promise.all(
-    categoryNames.map(name => {
+    categoryNames.map((name) => {
       return prisma.productCategory.create({
         data: {
           name,
         },
-      });
+      })
     }),
-  );
+  )
 
-  return categories;
+  return categories
 }
 
 async function createProducts(categories: ProductCategory[]) {
@@ -55,10 +55,10 @@ async function createProducts(categories: ProductCategory[]) {
     categoryId: categories[Math.floor(Math.random() * categories.length)].id,
     price: Math.floor(Math.random() * 1000),
     stock: Math.floor(Math.random() * 50),
-  }));
+  }))
 
   const products = await Promise.all(
-    productsPayload.map(product => {
+    productsPayload.map((product) => {
       return prisma.product.create({
         data: {
           name: product.name,
@@ -67,11 +67,11 @@ async function createProducts(categories: ProductCategory[]) {
           stock: product.stock,
           categoryId: product.categoryId,
         },
-      });
+      })
     }),
-  );
+  )
 
-  return products;
+  return products
 }
 
 async function createProductReviews(products: Product[], users: User[]) {
@@ -81,39 +81,39 @@ async function createProductReviews(products: Product[], users: User[]) {
     rating: Math.floor(Math.random() * 5) + 1,
     comment: `Test Comment ${index + 1}`,
     userId: users[Math.floor(Math.random() * users.length)].id,
-  }));
+  }))
 
   const reviews = await Promise.all(
-    products.flatMap(product => {
-      return reviewsPayload.map(review => {
+    products.flatMap((product) => {
+      return reviewsPayload.map((review) => {
         return prisma.productReview.create({
           data: {
             ...review,
             productId: product.id,
           },
-        });
-      });
+        })
+      })
     }),
-  );
+  )
 
-  return reviews;
+  return reviews
 }
 
 async function seed() {
-  const users = await createUsers();
-  const categories = await createCategories();
-  const products = await createProducts(categories);
-  await createProductReviews(products, users);
+  const users = await createUsers()
+  const categories = await createCategories()
+  const products = await createProducts(categories)
+  await createProductReviews(products, users)
 
-  await prisma.$disconnect();
+  await prisma.$disconnect()
 }
 
 seed()
   .then(async () => {
-    await prisma.$disconnect();
+    await prisma.$disconnect()
   })
-  .catch(async e => {
-    console.error(e);
-    await prisma.$disconnect();
-    process.exit(1);
-  });
+  .catch(async (e) => {
+    console.error(e)
+    await prisma.$disconnect()
+    process.exit(1)
+  })
