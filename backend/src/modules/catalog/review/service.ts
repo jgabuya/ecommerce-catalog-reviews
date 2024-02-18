@@ -7,6 +7,7 @@ import {
 import { ProductServiceInterface } from '../product/service'
 import { UserServiceInterface } from '../../user/service'
 import { User } from '../../user/types'
+import xss from 'xss'
 
 class ProductReviewService {
   store: Store
@@ -48,7 +49,11 @@ class ProductReviewService {
       throw new Error('User already reviewed the product')
     }
 
-    return await this.store.create(review)
+    return await this.store.create({
+      ...review,
+      // prevent xss attack
+      comment: xss(review.comment),
+    })
   }
 
   async findMany(query?: {
