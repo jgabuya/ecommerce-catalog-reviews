@@ -26,8 +26,15 @@ class ProductReviewService {
     return await this.store.create(review);
   }
 
-  async findAll(): Promise<ProductReview[]> {
-    return await this.store.findAll();
+  async findMany(query?: {
+    productId: string;
+    page?: number;
+    limit?: number;
+    sort?: 'createdAt' | 'updatedAt' | 'rating';
+    order?: 'asc' | 'desc';
+    filter?: Pick<ProductReview, 'rating'>;
+  }): Promise<ProductReview[]> {
+    return await this.store.findMany(query);
   }
 
   async findOne(id: string): Promise<ProductReview | null> {
