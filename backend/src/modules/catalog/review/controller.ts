@@ -42,7 +42,6 @@ router.post('/', async (req, res) => {
 });
 
 router.get('/', async (req, res) => {
-  console.log('params', req.params);
   // validate query
   const schema = z.object({
     page: z.number().optional(),

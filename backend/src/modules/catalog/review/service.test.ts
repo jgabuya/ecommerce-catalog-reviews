@@ -1,6 +1,5 @@
 import { ProductReviewService } from './service';
 import { Store } from './store';
-import { ProductService } from '../product/service';
 import {
   ProductReview,
   CreateProductReviewPayload,
