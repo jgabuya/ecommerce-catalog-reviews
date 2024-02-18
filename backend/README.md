@@ -11,3 +11,9 @@ npx prisma migrate dev --name descriptive_migration_name
 ```sh
 npx prisma generate
 ```
+
+### generate seed
+
+```sh
+npx prisma db seed
+```

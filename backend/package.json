@@ -34,5 +34,8 @@
     "lodash": "^4.17.21",
     "morgan": "^1.10.0",
     "zod": "^3.22.4"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   }
 }
