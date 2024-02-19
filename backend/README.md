@@ -1,3 +1,17 @@
+## Description
+
+The following functionalities are implemented:
+
+## Structure
+
+## Setup
+
+## Testing
+
+## API
+
+## Additional Notes
+
 ## Prisma
 
 ### migration
