@@ -29,7 +29,7 @@ const gracefulShutdown = () => {
 
   server.close(async () => {
     console.log('Server closed. Exiting process...')
-    // Here you can also clean up other resources like database connections
+    // clean up database connection
     await prismaClient.$disconnect()
     process.exit(0)
   })
