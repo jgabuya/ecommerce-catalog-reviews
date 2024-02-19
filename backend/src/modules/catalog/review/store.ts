@@ -4,6 +4,7 @@ import {
   UpdateProductReviewPayload,
 } from './types'
 import { prismaClient } from '../../../../prisma/client'
+import { withCache, clearCache } from '../../../utils/redis'
 
 interface Store {
   create(review: CreateProductReviewPayload): Promise<ProductReview>
@@ -71,24 +72,30 @@ class ProductReviewStore implements Store {
       where.rating = filter.rating
     }
 
-    return await prismaClient.productReview.findMany({
+    const params = {
       skip,
       take,
       orderBy,
       where,
-    })
+    }
+
+    return await withCache(`reviews:${JSON.stringify(params)}`, () =>
+      prismaClient.productReview.findMany(params),
+    )
   }
 
   async findOne(id: string): Promise<ProductReview | null> {
-    return await prismaClient.productReview.findUnique({
-      where: {
-        id: id,
-      },
-    })
+    return await withCache(`review:${id}`, () =>
+      prismaClient.productReview.findUnique({
+        where: {
+          id: id,
+        },
+      }),
+    )
   }
 
   async update(review: UpdateProductReviewPayload): Promise<ProductReview> {
-    return await prismaClient.productReview.update({
+    const data = await prismaClient.productReview.update({
       where: {
         id: review.id,
       },
@@ -97,6 +104,9 @@ class ProductReviewStore implements Store {
         comment: review.comment,
       },
     })
+
+    await clearCache(`review:${review.id}`)
+    return data
   }
 
   async delete(id: string): Promise<boolean> {
@@ -105,6 +115,8 @@ class ProductReviewStore implements Store {
         id: id,
       },
     })
+
+    await clearCache(`review:${id}`)
     return true
   }
 }

@@ -1,4 +1,5 @@
 import { prismaClient } from '../../../../prisma/client'
+import { withCache, clearCache } from '../../../utils/redis'
 import { Product, CreateProductPayload, UpdateProductPayload } from './types'
 interface Store {
   create(
@@ -28,23 +29,27 @@ class ProductStore implements Store {
   }
 
   async findAll(): Promise<Product[]> {
-    return await prismaClient.product.findMany({
-      include: {
-        category: true,
-      },
-    })
+    return await withCache('products', () =>
+      prismaClient.product.findMany({
+        include: {
+          category: true,
+        },
+      }),
+    )
   }
 
   async findOne(id: string): Promise<Product | null> {
-    return await prismaClient.product.findUnique({
-      where: {
-        id: id,
-      },
-    })
+    return await withCache(`product:${id}`, () =>
+      prismaClient.product.findUnique({
+        where: {
+          id: id,
+        },
+      }),
+    )
   }
 
   async update(product: UpdateProductPayload): Promise<Product> {
-    return await prismaClient.product.update({
+    const data = await prismaClient.product.update({
       where: {
         id: product.id,
       },
@@ -60,6 +65,9 @@ class ProductStore implements Store {
         },
       },
     })
+
+    await clearCache(`product:${product.id}`)
+    return data
   }
 
   async delete(id: string): Promise<boolean> {
@@ -69,6 +77,7 @@ class ProductStore implements Store {
       },
     })
 
+    await clearCache(`product:${id}`)
     return true
   }
 }
