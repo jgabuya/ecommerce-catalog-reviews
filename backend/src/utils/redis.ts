@@ -22,7 +22,7 @@ export async function withCache<T>(
   fetchCallback: () => Promise<T>,
   ttl: number = 60,
 ): Promise<T> {
-  // attempt to get the value from Redis
+  // attempt to get the value from redis
   const redis = await getInstance()
   const cachedValue = await redis.get(key)
 

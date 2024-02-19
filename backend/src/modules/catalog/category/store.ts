@@ -4,6 +4,7 @@ import {
   UpdateProductCategoryPayload,
 } from './types'
 import { prismaClient } from '../../../../prisma/client'
+import { withCache, clearCache } from '../../../utils/redis'
 
 interface Store {
   create(category: CreateProductCategoryPayload): Promise<ProductCategory>
@@ -25,21 +26,25 @@ class ProductCategoryStore implements Store {
   }
 
   async findAll(): Promise<ProductCategory[]> {
-    return await prismaClient.productCategory.findMany()
+    return await withCache('categories', () =>
+      prismaClient.productCategory.findMany(),
+    )
   }
 
   async findOne(id: string): Promise<ProductCategory | null> {
-    return await prismaClient.productCategory.findUnique({
-      where: {
-        id: id,
-      },
-    })
+    return await withCache(`category:${id}`, () =>
+      prismaClient.productCategory.findUnique({
+        where: {
+          id: id,
+        },
+      }),
+    )
   }
 
   async update(
     category: UpdateProductCategoryPayload,
   ): Promise<ProductCategory> {
-    return await prismaClient.productCategory.update({
+    const data = await prismaClient.productCategory.update({
       where: {
         id: category.id,
       },
@@ -47,6 +52,9 @@ class ProductCategoryStore implements Store {
         name: category.name,
       },
     })
+
+    await clearCache(`category:${category.id}`)
+    return data
   }
 
   async delete(id: string): Promise<boolean> {
@@ -55,6 +63,8 @@ class ProductCategoryStore implements Store {
         id: id,
       },
     })
+
+    await clearCache(`category:${id}`)
     return true
   }
 }

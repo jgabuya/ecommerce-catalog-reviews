@@ -5,6 +5,7 @@ import { productCategoryRouter } from './modules/catalog/category/controller'
 import { productReviewRouter } from './modules/catalog/review/controller'
 import { userRouter } from './modules/user/controller'
 import { prismaClient } from '../prisma/client'
+import { disconnect as disconnectRedis } from './utils/redis'
 import morgan from 'morgan'
 import http from 'http'
 
@@ -29,8 +30,13 @@ const gracefulShutdown = () => {
 
   server.close(async () => {
     console.log('Server closed. Exiting process...')
+
     // clean up database connection
     await prismaClient.$disconnect()
+
+    // clean up Redis connection
+    await disconnectRedis()
+
     process.exit(0)
   })
 }
