@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 const Nav: React.FC = () => {
   const [state, setState] = useState(false);
@@ -20,14 +21,14 @@ const Nav: React.FC = () => {
     >
       <div className="gap-x-14 items-center max-w-screen-xl mx-auto px-4 md:flex md:px-8">
         <div className="flex items-center justify-between py-5 md:block">
-          <a href="/">
+          <Link href="/">
             <img
               src="https://placehold.co/120x50?text=Logo"
               width={120}
               height={50}
               alt="logo"
             />
-          </a>
+          </Link>
           <div className="md:hidden">
             <button
               className="menu-btn text-gray-500 hover:text-gray-800"
