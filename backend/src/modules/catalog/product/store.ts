@@ -41,16 +41,16 @@ class ProductStore implements Store {
   }
 
   async findOne(id: string): Promise<Product | null> {
-    return await withCache(
-      `product:${id}`,
-      () =>
-        prismaClient.$queryRaw`
+    return await withCache(`product:${id}`, async () => {
+      const result = await prismaClient.$queryRaw`
         SELECT p.*, AVG(pr.rating) as averageRating
         FROM Product p
         LEFT JOIN ProductReview pr ON p.id = pr.productId
         WHERE p.id = ${id}
-      `,
-    )
+      `
+
+      return (result as Product[])[0]
+    })
   }
 
   async update(product: UpdateProductPayload): Promise<Product> {
