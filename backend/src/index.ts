@@ -1,17 +1,23 @@
 import express from 'express'
 import { json } from 'body-parser'
+import morgan from 'morgan'
+import http from 'http'
+import cors from 'cors'
 import { productRouter } from './modules/catalog/product/controller'
 import { productCategoryRouter } from './modules/catalog/category/controller'
 import { productReviewRouter } from './modules/catalog/review/controller'
 import { userRouter } from './modules/user/controller'
 import { prismaClient } from '../prisma/client'
 import { disconnect as disconnectRedis } from './utils/redis'
-import morgan from 'morgan'
-import http from 'http'
 
 const app = express()
 const server = http.createServer(app)
+const corsOptions = {
+  origin: 'http://localhost:3000', // Allow only the frontend origin
+  optionsSuccessStatus: 200, // For legacy browser support
+}
 
+app.use(cors(corsOptions))
 app.use(json())
 app.use(morgan('dev'))
 
