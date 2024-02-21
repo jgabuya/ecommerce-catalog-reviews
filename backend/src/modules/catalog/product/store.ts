@@ -3,7 +3,7 @@ import { withCache, clearCache } from '../../../utils/redis'
 import { Product, CreateProductPayload, UpdateProductPayload } from './types'
 interface Store {
   create(
-    product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>,
+    product: Omit<Product, 'id' | 'createdAt' | 'updatedAt' | 'averageRating'>,
   ): Promise<Product>
   findAll(): Promise<Product[]>
   findOne(id: string): Promise<Product | null>
@@ -31,36 +31,7 @@ class ProductStore implements Store {
   async findAll(): Promise<Product[]> {
     return await withCache(
       'products',
-      () =>
-        // const products = await prismaClient.product.findMany({
-        //   include: {
-        //     category: true,
-        //     productReview: true,
-        //   },
-        // })
-
-        // const averages = await prismaClient.productReview.groupBy({
-        //   by: ['productId'],
-        //   _avg: {
-        //     rating: true,
-        //   },
-        //   where: {
-        //     productId: {
-        //       in: products.map((product) => product.id),
-        //     },
-        //   },
-        // })
-
-        // return products.map((product) => {
-        //   const average =
-        //     averages.find((avg) => avg.productId === product.id)?._avg.rating || 0
-        //   return {
-        //     ...product,
-        //     averageRating: average,
-        //   }
-        // })
-
-        prismaClient.$queryRaw`
+      () => prismaClient.$queryRaw`
         SELECT p.*, AVG(pr.rating) as averageRating
         FROM Product p
         LEFT JOIN ProductReview pr ON p.id = pr.productId
@@ -70,12 +41,15 @@ class ProductStore implements Store {
   }
 
   async findOne(id: string): Promise<Product | null> {
-    return await withCache(`product:${id}`, () =>
-      prismaClient.product.findUnique({
-        where: {
-          id: id,
-        },
-      }),
+    return await withCache(
+      `product:${id}`,
+      () =>
+        prismaClient.$queryRaw`
+        SELECT p.*, AVG(pr.rating) as averageRating
+        FROM Product p
+        LEFT JOIN ProductReview pr ON p.id = pr.productId
+        WHERE p.id = ${id}
+      `,
     )
   }
 
