@@ -13,7 +13,7 @@ import { disconnect as disconnectRedis } from './utils/redis'
 const app = express()
 const server = http.createServer(app)
 const corsOptions = {
-  origin: 'http://localhost:3000', // Allow only the frontend origin
+  origin: process.env.FRONTEND_URL, // Allow only the frontend origin
   optionsSuccessStatus: 200, // For legacy browser support
 }
 

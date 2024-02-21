@@ -62,6 +62,7 @@ You need to change the env values accordingly:
 - **DATABASE_URL**: This is the path to the SQLite file relative to the `./prisma` directory. Example: `DATABASE_URL="file:./dev.db"`
 - **ACCESS_TOKEN_SECRET**: A string used for generating and verifying JWT access tokens. Example: `ACCESS_TOKEN_SECRET=my-secret`
 - **REDIS_URL**: Example `REDIS_URL=redis://localhost:6379`
+- **FRONTEND_URL**: To determine which url to allow requests from. Example `FRONTEND_URL=http://localhost:3000`
 
 2. Install package dependencies
 
