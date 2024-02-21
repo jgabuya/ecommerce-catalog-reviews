@@ -1,10 +1,18 @@
-import { GetServerSideProps } from 'next';
+import { GetServerSideProps, NextPage } from 'next';
 import { Product } from '@/modules/product/types';
-import { ProductListingPage } from '@/modules/product/listing/ProductListingPage';
+import { ProductListingContainer } from '@/modules/product/listing/ProductListingContainer';
+import { Nav } from '@/components/Nav';
 
-export default function Home({ products }: { products: Product[] }) {
-  return <ProductListingPage products={products} />;
-}
+const Home: NextPage<{ products: Product[] }> = ({ products }) => {
+  if (!products) return <div>failed to load products</div>;
+
+  return (
+    <>
+      <Nav />
+      <ProductListingContainer products={products} />;
+    </>
+  );
+};
 
 export const getServerSideProps: GetServerSideProps = async () => {
   const props: { [key: string]: any } = {};
@@ -20,3 +28,5 @@ export const getServerSideProps: GetServerSideProps = async () => {
     props,
   };
 };
+
+export default Home;
