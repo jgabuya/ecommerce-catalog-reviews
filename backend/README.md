@@ -82,6 +82,12 @@ npx prisma db seed
 npm run dev
 ```
 
+Optionally, you can specify a PORT number which the app will run on. The default is `9000`
+
+```sh
+PORT=8000 npm run dev
+```
+
 ## Testing
 
 To run tests, use the command:
