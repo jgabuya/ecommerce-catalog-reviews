@@ -29,12 +29,43 @@ class ProductStore implements Store {
   }
 
   async findAll(): Promise<Product[]> {
-    return await withCache('products', () =>
-      prismaClient.product.findMany({
-        include: {
-          category: true,
-        },
-      }),
+    return await withCache(
+      'products',
+      () =>
+        // const products = await prismaClient.product.findMany({
+        //   include: {
+        //     category: true,
+        //     productReview: true,
+        //   },
+        // })
+
+        // const averages = await prismaClient.productReview.groupBy({
+        //   by: ['productId'],
+        //   _avg: {
+        //     rating: true,
+        //   },
+        //   where: {
+        //     productId: {
+        //       in: products.map((product) => product.id),
+        //     },
+        //   },
+        // })
+
+        // return products.map((product) => {
+        //   const average =
+        //     averages.find((avg) => avg.productId === product.id)?._avg.rating || 0
+        //   return {
+        //     ...product,
+        //     averageRating: average,
+        //   }
+        // })
+
+        prismaClient.$queryRaw`
+        SELECT p.*, AVG(pr.rating) as averageRating
+        FROM Product p
+        LEFT JOIN ProductReview pr ON p.id = pr.productId
+        GROUP BY p.id
+      `,
     )
   }
 

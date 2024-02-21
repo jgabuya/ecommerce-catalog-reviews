@@ -28,7 +28,8 @@ model Product {
   category      ProductCategory @relation(fields: [categoryId], references: [id])
   createdAt     DateTime?       @default(now())
   updatedAt     DateTime?       @updatedAt
-  ProductReview ProductReview[]
+  averageRating Float?
+  productReview ProductReview[]
 }
 
 model ProductReview {
