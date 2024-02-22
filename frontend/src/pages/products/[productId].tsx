@@ -2,7 +2,7 @@ import React from 'react';
 import { ProductWithCategory } from '@/modules/product/types';
 import { NextPage, GetServerSideProps } from 'next';
 import { ProductDetailsContainer } from '@/modules/product/details/ProductDetailsContainer';
-import { Nav } from '@/components/Nav';
+import { Layout } from '@/components/Layout';
 
 const ProductDetails: NextPage<{ product: ProductWithCategory }> = ({
   product,
@@ -10,10 +10,9 @@ const ProductDetails: NextPage<{ product: ProductWithCategory }> = ({
   if (!product) return <div>failed to load product</div>;
 
   return (
-    <>
-      <Nav />
+    <Layout>
       <ProductDetailsContainer product={product} />
-    </>
+    </Layout>
   );
 };
 
