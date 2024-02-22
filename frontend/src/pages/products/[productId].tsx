@@ -21,7 +21,7 @@ export const getServerSideProps: GetServerSideProps = async context => {
   try {
     const { params } = context;
     const response = await fetch(
-      `${process.env.BACKEND_URL}/products/${params?.productId}`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/products/${params?.productId}`,
     );
     props.product = await response.json();
   } catch (e) {

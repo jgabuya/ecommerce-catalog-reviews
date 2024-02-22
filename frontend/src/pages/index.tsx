@@ -18,7 +18,9 @@ export const getServerSideProps: GetServerSideProps = async () => {
   const props: { [key: string]: any } = {};
 
   try {
-    const response = await fetch(`${process.env.BACKEND_URL}/products`);
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/products`,
+    );
     props.products = await response.json();
   } catch (error) {
     console.error(error);

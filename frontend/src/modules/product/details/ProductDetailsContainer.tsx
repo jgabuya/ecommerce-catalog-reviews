@@ -1,3 +1,4 @@
+import { ReviewListingContainer } from '../reviews/ReviewListingContainer';
 import { Product } from '../types';
 
 export const ProductDetailsContainer: React.FC<{ product: Product }> = ({
@@ -59,8 +60,10 @@ export const ProductDetailsContainer: React.FC<{ product: Product }> = ({
                 </div>
                 <div className="mb-6 "></div>
 
-                <div className="flex gap-4 mb-6">
+                <div className="flex flex-col gap-4 mb-6">
                   <h2>Reviews</h2>
+
+                  <ReviewListingContainer productId={product.id} />
                 </div>
               </div>
             </div>
