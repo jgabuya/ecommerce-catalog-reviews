@@ -1,10 +1,12 @@
 import React from 'react';
-import { Product } from '@/modules/product/types';
+import { ProductWithCategory } from '@/modules/product/types';
 import { NextPage, GetServerSideProps } from 'next';
 import { ProductDetailsContainer } from '@/modules/product/details/ProductDetailsContainer';
 import { Nav } from '@/components/Nav';
 
-const ProductDetails: NextPage<{ product: Product }> = ({ product }) => {
+const ProductDetails: NextPage<{ product: ProductWithCategory }> = ({
+  product,
+}) => {
   if (!product) return <div>failed to load product</div>;
 
   return (

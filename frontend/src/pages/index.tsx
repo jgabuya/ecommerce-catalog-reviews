@@ -1,9 +1,9 @@
 import { GetServerSideProps, NextPage } from 'next';
-import { Product } from '@/modules/product/types';
+import { ProductWithCategory } from '@/modules/product/types';
 import { ProductListingContainer } from '@/modules/product/listing/ProductListingContainer';
 import { Nav } from '@/components/Nav';
 
-const Home: NextPage<{ products: Product[] }> = ({ products }) => {
+const Home: NextPage<{ products: ProductWithCategory[] }> = ({ products }) => {
   if (!products) return <div>failed to load products</div>;
 
   return (

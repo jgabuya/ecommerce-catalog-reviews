@@ -1,9 +1,9 @@
 import { ReviewListingContainer } from '../reviews/ReviewListingContainer';
-import { Product } from '../types';
+import { ProductWithCategory } from '../types';
 
-export const ProductDetailsContainer: React.FC<{ product: Product }> = ({
-  product,
-}) => {
+export const ProductDetailsContainer: React.FC<{
+  product: ProductWithCategory;
+}> = ({ product }) => {
   return (
     <main className="gap-x-14 items-center max-w-screen-xl mx-auto px-4 md:flex md:px-8 py-10">
       <section className="py-10 font-poppins dark:bg-gray-800">
@@ -24,7 +24,7 @@ export const ProductDetailsContainer: React.FC<{ product: Product }> = ({
               <div className="lg:pl-20">
                 <div className="mb-6 ">
                   <span className="px-2.5 py-0.5 text-xs text-blue-600 bg-blue-100 dark:bg-gray-700 rounded-xl dark:text-gray-200">
-                    {product.categoryId}
+                    {product.category.name}
                   </span>
                   <h2 className="max-w-xl mt-6 mb-6 text-xl font-semibold leading-loose tracking-wide text-gray-700 md:text-2xl dark:text-gray-300">
                     {product.name}
