@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken'
 import { omit } from 'lodash'
 import dotenv from 'dotenv'
 import { z } from 'zod'
+import cookie from 'cookie'
 
 dotenv.config()
 
@@ -14,6 +15,7 @@ const userService = new UserService(store)
 
 router.post('/login', handleLogin)
 router.post('/register', handleRegister)
+router.post('/me', authenticateToken, handleMe)
 
 async function handleLogin(req: Request, res: Response) {
   try {
@@ -22,6 +24,17 @@ async function handleLogin(req: Request, res: Response) {
     const accessToken = jwt.sign(
       omit(user, 'password'),
       process.env.ACCESS_TOKEN_SECRET as string,
+    )
+
+    // set the token in an HTTP-only cookie
+    res.setHeader(
+      'Set-Cookie',
+      cookie.serialize('auth', accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 60 * 60 * 24 * 7, // 1 week
+        path: '/',
+      }),
     )
 
     res.json({ ...user, accessToken })
@@ -50,6 +63,11 @@ async function handleRegister(req: Request, res: Response) {
     console.error(e)
     res.status(500).send()
   }
+}
+
+async function handleMe(req: Request, res: Response) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  res.json((req as any).user)
 }
 
 // Middleware to authenticate JWT

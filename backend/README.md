@@ -129,6 +129,7 @@ Due to time constraints, tests are only present for module service classes. A ni
 
 - `POST /auth/register`: Register a new user
 - `POST /auth/login`: Log in a user
+- `POST /auth/me`: Return the user object associated with the provided token
 
 ## Prisma
 

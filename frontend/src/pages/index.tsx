@@ -1,16 +1,15 @@
 import { GetServerSideProps, NextPage } from 'next';
 import { ProductWithCategory } from '@/modules/product/types';
 import { ProductListingContainer } from '@/modules/product/listing/ProductListingContainer';
-import { Nav } from '@/components/Nav';
+import { Layout } from '@/components/Layout';
 
 const Home: NextPage<{ products: ProductWithCategory[] }> = ({ products }) => {
   if (!products) return <div>failed to load products</div>;
 
   return (
-    <>
-      <Nav />
+    <Layout>
       <ProductListingContainer products={products} />;
-    </>
+    </Layout>
   );
 };
 
