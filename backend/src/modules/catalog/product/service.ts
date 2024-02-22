@@ -1,11 +1,16 @@
-import { Product, CreateProductPayload, UpdateProductPayload } from './types'
+import {
+  Product,
+  CreateProductPayload,
+  UpdateProductPayload,
+  ProductWithCategory,
+} from './types'
 import { Store } from './store'
 
 // extract an interface from ProductService
 export interface ProductServiceInterface {
   create(product: CreateProductPayload): Promise<Product>
-  findAll(): Promise<Product[]>
-  findOne(id: string): Promise<Product | null>
+  findAll(): Promise<ProductWithCategory[]>
+  findOne(id: string): Promise<ProductWithCategory | null>
   update(product: UpdateProductPayload): Promise<Product>
   delete(id: string): Promise<boolean>
 }
@@ -21,11 +26,11 @@ export class ProductService implements ProductServiceInterface {
     return await this.store.create(product)
   }
 
-  async findAll(): Promise<Product[]> {
+  async findAll(): Promise<ProductWithCategory[]> {
     return await this.store.findAll()
   }
 
-  async findOne(id: string): Promise<Product | null> {
+  async findOne(id: string): Promise<ProductWithCategory | null> {
     return await this.store.findOne(id)
   }
 
