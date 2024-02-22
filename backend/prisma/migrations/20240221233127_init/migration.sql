@@ -16,6 +16,7 @@ CREATE TABLE "Product" (
     "categoryId" TEXT NOT NULL,
     "createdAt" DATETIME DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME,
+    "averageRating" REAL,
     CONSTRAINT "Product_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "ProductCategory" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 

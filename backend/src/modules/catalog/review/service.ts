@@ -1,6 +1,7 @@
 import { Store } from './store'
 import {
   ProductReview,
+  ProductReviewWithUser,
   CreateProductReviewPayload,
   UpdateProductReviewPayload,
 } from './types'
@@ -8,6 +9,7 @@ import { ProductServiceInterface } from '../product/service'
 import { UserServiceInterface } from '../../user/service'
 import { User } from '../../user/types'
 import xss from 'xss'
+import pick from 'lodash/pick'
 
 class ProductReviewService {
   store: Store
@@ -63,8 +65,14 @@ class ProductReviewService {
     sort?: 'createdAt' | 'updatedAt' | 'rating'
     order?: 'asc' | 'desc'
     filter?: Pick<ProductReview, 'rating'>
-  }): Promise<ProductReview[]> {
-    return await this.store.findMany(query)
+  }): Promise<ProductReviewWithUser[]> {
+    const reviews = await this.store.findMany(query)
+
+    return reviews.map((review) => ({
+      ...review,
+      // remove user password
+      user: pick(review.user, 'id', 'name'),
+    }))
   }
 
   async findOne(id: string): Promise<ProductReview | null> {

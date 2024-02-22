@@ -8,21 +8,40 @@ import bcrypt from 'bcryptjs'
 const prisma = new PrismaClient()
 
 async function createUsers(): Promise<User[]> {
-  const usersPayload: CreateUserPayload[] = [
-    {
-      email: 'test@mail.com',
-      password: bcrypt.hashSync('123456', 10),
-    },
-    {
-      email: 'test2@mail.com',
-      password: bcrypt.hashSync('123456', 10),
-    },
+  const names = [
+    'John Snow',
+    'Arya Stark',
+    'Sansa Stark',
+    'Bran Stark',
+    'Robb Stark',
+    'Rickon Stark',
+    'Ned Stark',
+    'Catelyn Stark',
+    'Tyrion Lannister',
+    'Jaime Lannister',
+    'Cersei Lannister',
+    'Tywin Lannister',
+    'Joffrey Baratheon',
+    'Tommen Baratheon',
+    'Myrcella Baratheon',
   ]
 
+  const userPayload: CreateUserPayload = {
+    email: '',
+    name: '',
+    password: bcrypt.hashSync('123456', 10),
+  }
+
   const users = await Promise.all(
-    usersPayload.map((user) => {
+    Array.from({
+      length: 15,
+    }).map((_, index) => {
       return prisma.user.create({
-        data: user,
+        data: {
+          ...userPayload,
+          email: `test${index + 1}@mail.com`,
+          name: names[index],
+        },
       })
     }),
   )
@@ -76,11 +95,11 @@ async function createProducts(categories: ProductCategory[]) {
 
 async function createProductReviews(products: Product[], users: User[]) {
   const reviewsPayload = Array.from({
-    length: 13,
+    length: 15,
   }).map((_, index) => ({
     rating: Math.floor(Math.random() * 5) + 1,
     comment: `Test Comment ${index + 1}`,
-    userId: users[Math.floor(Math.random() * users.length)].id,
+    userId: users[index].id,
   }))
 
   const reviews = await Promise.all(

@@ -2,6 +2,7 @@ import {
   ProductReview,
   CreateProductReviewPayload,
   UpdateProductReviewPayload,
+  ProductReviewWithUser,
 } from './types'
 import { prismaClient } from '../../../../prisma/client'
 import { withCache, clearCache } from '../../../utils/redis'
@@ -15,7 +16,7 @@ interface Store {
     sort?: string
     order?: 'asc' | 'desc'
     filter?: Partial<ProductReview>
-  }): Promise<ProductReview[]>
+  }): Promise<ProductReviewWithUser[]>
   findOne(id: string): Promise<ProductReview | null>
   update(review: UpdateProductReviewPayload): Promise<ProductReview>
   delete(id: string): Promise<boolean>
@@ -48,7 +49,7 @@ class ProductReviewStore implements Store {
     sort?: 'createdAt' | 'updatedAt' | 'rating'
     order?: 'asc' | 'desc'
     filter?: Pick<ProductReview, 'rating'>
-  }): Promise<ProductReview[]> {
+  }): Promise<ProductReviewWithUser[]> {
     const {
       page = 1,
       limit = 5,
@@ -77,6 +78,9 @@ class ProductReviewStore implements Store {
       take,
       orderBy,
       where,
+      include: {
+        user: true,
+      },
     }
 
     return await withCache(`reviews:${JSON.stringify(params)}`, () =>

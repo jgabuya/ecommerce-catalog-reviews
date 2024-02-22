@@ -15,7 +15,7 @@ model ProductCategory {
   name      String    @unique
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
-  Product   Product[]
+  products  Product[]
 }
 
 model Product {
@@ -47,8 +47,9 @@ model ProductReview {
 model User {
   id            String          @id @default(uuid())
   email         String          @unique
+  name          String
   password      String
   createdAt     DateTime?       @default(now())
   updatedAt     DateTime?       @updatedAt
-  ProductReview ProductReview[]
+  productReview ProductReview[]
 }
