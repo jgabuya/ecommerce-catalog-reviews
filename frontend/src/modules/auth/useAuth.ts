@@ -1,34 +1,43 @@
+import { User } from './types';
+import { useCallback } from 'react';
+
 export function useAuth() {
-  async function login(email: string, password: string) {
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password }),
-        },
-      );
+  const login = useCallback(
+    async (
+      email: string,
+      password: string,
+    ): Promise<{ user?: User; error?: string }> => {
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password }),
+          },
+        );
 
-      const user = await response.json();
-      localStorage.setItem('token', user.accessToken);
+        const user = await response.json();
+        localStorage.setItem('token', user.accessToken);
 
-      // notify other parts of the app that the user has logged in
-      window.dispatchEvent(new Event('login'));
+        // notify other parts of the app that the user has logged in
+        window.dispatchEvent(new Event('login'));
 
-      return { user };
-    } catch (error) {
-      return { error: 'Login failed' };
-    }
-  }
+        return { user };
+      } catch (error) {
+        return { error: 'Login failed' };
+      }
+    },
+    [],
+  );
 
-  async function logout() {
+  const logout = useCallback(() => {
     localStorage.removeItem('token');
 
     window.dispatchEvent(new Event('logout'));
-  }
+  }, []);
 
-  async function getLoggedInUser() {
+  const getLoggedInUser = useCallback(async (): Promise<User | null> => {
     const token = localStorage.getItem('token');
 
     if (!token) {
@@ -48,12 +57,12 @@ export function useAuth() {
     } catch (error) {
       return null;
     }
-  }
+  }, []);
 
-  async function isUserLoggedIn() {
+  const isUserLoggedIn = useCallback(async (): Promise<boolean> => {
     const user = await getLoggedInUser();
     return user !== null;
-  }
+  }, []);
 
   return { login, isUserLoggedIn, logout, getLoggedInUser };
 }

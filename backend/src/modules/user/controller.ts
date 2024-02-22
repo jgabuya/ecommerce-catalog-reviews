@@ -15,7 +15,7 @@ const userService = new UserService(store)
 
 router.post('/login', handleLogin)
 router.post('/register', handleRegister)
-router.post('/me', authenticateToken, handleMe)
+router.get('/me', authenticateToken, handleMe)
 
 async function handleLogin(req: Request, res: Response) {
   try {

@@ -1,29 +1,50 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useAuth, User } from '@/modules/auth';
 
 interface NavProps {
   onLoginButtonClick: () => void;
 }
 
 const Nav: React.FC<NavProps> = ({ onLoginButtonClick }) => {
-  const [state, setState] = useState(false);
+  const [isMobileMenuVisible, setIsMobileMenuVisible] = useState(false);
+  const [loggedInUser, setLoggedInUser] = useState<User | null>(null);
+
+  const { getLoggedInUser, logout } = useAuth();
+
+  useEffect(() => {
+    async function handleGetLoggedInUser() {
+      const user = await getLoggedInUser();
+      setLoggedInUser(user ? user : null);
+    }
+
+    handleGetLoggedInUser();
+
+    window.addEventListener('login', handleGetLoggedInUser);
+    window.addEventListener('logout', handleGetLoggedInUser);
+  }, [getLoggedInUser]);
 
   useEffect(() => {
     document.onclick = (e: MouseEvent) => {
       const target = e.target as HTMLElement; // Typecast target to HTMLElement
-      if (!target.closest('.menu-btn')) setState(false);
+      if (!target.closest('.menu-btn')) setIsMobileMenuVisible(false);
     };
   }, []);
 
-  const handleLoginButtonClick = (e: React.MouseEvent<HTMLElement>) => {
+  const handleLogin = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault();
     onLoginButtonClick();
+  };
+
+  const handleLogout = async (e: React.MouseEvent<HTMLElement>) => {
+    e.preventDefault();
+    await logout();
   };
 
   return (
     <nav
       className={`bg-white pb-5 md:text-sm ${
-        state
+        isMobileMenuVisible
           ? 'shadow-lg rounded-xl border mx-2 mt-2 md:shadow-none md:border-none md:mx-2 md:mt-0'
           : ''
       }`}
@@ -41,9 +62,9 @@ const Nav: React.FC<NavProps> = ({ onLoginButtonClick }) => {
           <div className="md:hidden">
             <button
               className="menu-btn text-gray-500 hover:text-gray-800"
-              onClick={() => setState(!state)}
+              onClick={() => setIsMobileMenuVisible(!isMobileMenuVisible)}
             >
-              {state ? (
+              {isMobileMenuVisible ? (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="h-6 w-6"
@@ -77,32 +98,46 @@ const Nav: React.FC<NavProps> = ({ onLoginButtonClick }) => {
         </div>
         <div
           className={`flex-1 items-center mt-8 md:mt-0 md:flex ${
-            state ? 'block' : 'hidden'
+            isMobileMenuVisible ? 'block' : 'hidden'
           } `}
         >
           <div className="flex-1 gap-x-6 items-center justify-end mt-6 space-y-6 md:flex md:space-y-0 md:mt-0">
-            <a href="#" className="block text-gray-700 hover:text-gray-900">
-              Register
-            </a>
-            <a
-              href="#"
-              onClick={handleLoginButtonClick}
-              className="flex items-center justify-center gap-x-1 py-2 px-4 text-white font-medium bg-gray-800 hover:bg-gray-700 active:bg-gray-900 rounded-full md:inline-flex"
-            >
-              Sign in
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                className="w-5 h-5"
+            {loggedInUser && (
+              <a
+                href="#"
+                onClick={handleLogout}
+                className="block text-gray-700 hover:text-gray-900"
               >
-                <path
-                  fillRule="evenodd"
-                  d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </a>
+                Logout ({loggedInUser.email})
+              </a>
+            )}
+
+            {!loggedInUser && (
+              <>
+                <a href="#" className="block text-gray-700 hover:text-gray-900">
+                  Register
+                </a>
+                <a
+                  href="#"
+                  onClick={handleLogin}
+                  className="flex items-center justify-center gap-x-1 py-2 px-4 text-white font-medium bg-gray-800 hover:bg-gray-700 active:bg-gray-900 rounded-full md:inline-flex"
+                >
+                  Sign in
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    className="w-5 h-5"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </a>
+              </>
+            )}
           </div>
         </div>
       </div>
