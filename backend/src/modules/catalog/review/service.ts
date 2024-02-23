@@ -42,12 +42,12 @@ class ProductReviewService {
     }
 
     // check if user already reviewed the product
-    const existingReview = await this.store.findMany({
-      productId: review.productId,
-      filter: { userId: review.userId },
-    })
+    const existingReview = await this.store.findByProductAndUserIds(
+      review.productId,
+      review.userId,
+    )
 
-    if (existingReview.length > 0) {
+    if (existingReview) {
       throw new Error('User already reviewed the product')
     }
 

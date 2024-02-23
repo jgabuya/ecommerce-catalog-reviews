@@ -1,9 +1,12 @@
-import { ReviewListingContainer } from '../reviews/ReviewListingContainer';
+import { useAuth } from '@/modules/auth';
+import { ReviewListingContainer, ReviewForm } from '../reviews';
 import { ProductWithCategory } from '../types';
 
 export const ProductDetailsContainer: React.FC<{
   product: ProductWithCategory;
 }> = ({ product }) => {
+  const { loggedInUser } = useAuth();
+
   return (
     <main className="gap-x-14 items-center max-w-screen-xl mx-auto px-4 md:flex md:px-8 py-10">
       <section className="py-10 font-poppins dark:bg-gray-800">
@@ -59,6 +62,21 @@ export const ProductDetailsContainer: React.FC<{
                   </span>
                 </div>
                 <div className="mb-6 "></div>
+
+                <div className="flex flex-col gap-4 mb-6 border-b border-gray-200 pb-6">
+                  <h2>Add a review</h2>
+
+                  {loggedInUser ? (
+                    <ReviewForm
+                      productId={product.id}
+                      userId={loggedInUser.id}
+                    />
+                  ) : (
+                    <span className="text-xs text-gray-600 dark:text-gray-400">
+                      You need to be logged in to leave a review
+                    </span>
+                  )}
+                </div>
 
                 <div className="flex flex-col gap-4 mb-6">
                   <h2>Reviews</h2>

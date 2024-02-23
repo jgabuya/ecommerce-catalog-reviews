@@ -24,6 +24,7 @@ async function createUsers(): Promise<User[]> {
     'Joffrey Baratheon',
     'Tommen Baratheon',
     'Myrcella Baratheon',
+    'Robert Baratheon',
   ]
 
   const userPayload: CreateUserPayload = {
@@ -34,7 +35,7 @@ async function createUsers(): Promise<User[]> {
 
   const users = await Promise.all(
     Array.from({
-      length: 15,
+      length: 16,
     }).map((_, index) => {
       return prisma.user.create({
         data: {

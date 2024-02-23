@@ -9,7 +9,7 @@ const fetchReviews = async (url: string): Promise<ProductReviewWithUser[]> => {
 
 export const useFetchReviews = (productId: string, options = {}) => {
   const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/products/${productId}/reviews`;
-  console.log('url', url);
+
   const { data, error } = useSWR(url, fetchReviews, options);
 
   return {

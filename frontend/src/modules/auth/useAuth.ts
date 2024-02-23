@@ -1,35 +1,35 @@
+import { useState } from 'react';
 import { User } from './types';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 
 export function useAuth() {
-  const login = useCallback(
-    async (
-      email: string,
-      password: string,
-    ): Promise<{ user?: User; error?: string }> => {
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password }),
-          },
-        );
+  const [loggedInUser, setLoggedInUser] = useState<User | null>(null);
+  const [loginError, setLoginError] = useState<string | null>(null);
 
-        const user = await response.json();
-        localStorage.setItem('token', user.accessToken);
+  const login = useCallback(async (email: string, password: string) => {
+    try {
+      setLoginError(null);
 
-        // notify other parts of the app that the user has logged in
-        window.dispatchEvent(new Event('login'));
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        },
+      );
 
-        return { user };
-      } catch (error) {
-        return { error: 'Login failed' };
-      }
-    },
-    [],
-  );
+      const user = await response.json();
+      setLoggedInUser(user);
+      localStorage.setItem('token', user.accessToken);
+
+      // notify other parts of the app that the user has logged in
+      window.dispatchEvent(new Event('login'));
+    } catch (error) {
+      setLoginError('Failed to login');
+      console.error(error);
+    }
+  }, []);
 
   const logout = useCallback(() => {
     localStorage.removeItem('token');
@@ -59,10 +59,22 @@ export function useAuth() {
     }
   }, []);
 
-  const isUserLoggedIn = useCallback(async (): Promise<boolean> => {
-    const user = await getLoggedInUser();
-    return user !== null;
-  }, []);
+  useEffect(() => {
+    window.addEventListener('login', async () => {
+      const user = await getLoggedInUser();
+      setLoggedInUser(user);
+    });
 
-  return { login, isUserLoggedIn, logout, getLoggedInUser };
+    window.addEventListener('logout', () => {
+      setLoggedInUser(null);
+    });
+  }, [getLoggedInUser]);
+
+  useEffect(() => {
+    getLoggedInUser().then(user => {
+      setLoggedInUser(user);
+    });
+  }, [getLoggedInUser]);
+
+  return { login, loggedInUser, loginError, logout, getLoggedInUser };
 }

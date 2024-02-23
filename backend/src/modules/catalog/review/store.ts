@@ -18,6 +18,10 @@ interface Store {
     filter?: Partial<ProductReview>
   }): Promise<ProductReviewWithUser[]>
   findOne(id: string): Promise<ProductReview | null>
+  findByProductAndUserIds(
+    productId: string,
+    userId: string,
+  ): Promise<ProductReview | null>
   update(review: UpdateProductReviewPayload): Promise<ProductReview>
   delete(id: string): Promise<boolean>
 }
@@ -96,6 +100,15 @@ class ProductReviewStore implements Store {
         },
       }),
     )
+  }
+
+  async findByProductAndUserIds(productId: string, userId: string) {
+    return await prismaClient.productReview.findFirst({
+      where: {
+        productId,
+        userId,
+      },
+    })
   }
 
   async update(review: UpdateProductReviewPayload): Promise<ProductReview> {

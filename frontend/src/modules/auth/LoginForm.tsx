@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAuth } from './useAuth';
 
 interface LoginFormProps {
@@ -6,25 +6,22 @@ interface LoginFormProps {
 }
 
 export const LoginForm: React.FC<LoginFormProps> = ({ onSuccessfulLogin }) => {
-  const { login } = useAuth();
+  const { login, loginError, loggedInUser } = useAuth();
 
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
-  const [error, setError] = React.useState('');
 
   const handleSubmit = async (event: React.FormEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    setError('');
 
-    const result = await login(email, password);
-
-    if (result.error) {
-      setError(result.error);
-      return;
-    }
-
-    onSuccessfulLogin();
+    await login(email, password);
   };
+
+  useEffect(() => {
+    if (loggedInUser) {
+      onSuccessfulLogin();
+    }
+  }, [loggedInUser, onSuccessfulLogin]);
 
   return (
     <form className="max-w-sm mx-auto">
@@ -60,7 +57,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccessfulLogin }) => {
         />
       </div>
 
-      {error && <p className="text-red-500 text-sm mb-5">{error}</p>}
+      {loginError && <p className="text-red-500 text-sm mb-5">{loginError}</p>}
 
       <button
         onClick={handleSubmit}

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useAuth, User } from '@/modules/auth';
+import { useAuth } from '@/modules/auth';
 
 interface NavProps {
   onLoginButtonClick: () => void;
@@ -8,21 +8,7 @@ interface NavProps {
 
 const Nav: React.FC<NavProps> = ({ onLoginButtonClick }) => {
   const [isMobileMenuVisible, setIsMobileMenuVisible] = useState(false);
-  const [loggedInUser, setLoggedInUser] = useState<User | null>(null);
-
-  const { getLoggedInUser, logout } = useAuth();
-
-  useEffect(() => {
-    async function handleGetLoggedInUser() {
-      const user = await getLoggedInUser();
-      setLoggedInUser(user ? user : null);
-    }
-
-    handleGetLoggedInUser();
-
-    window.addEventListener('login', handleGetLoggedInUser);
-    window.addEventListener('logout', handleGetLoggedInUser);
-  }, [getLoggedInUser]);
+  const { loggedInUser, logout } = useAuth();
 
   useEffect(() => {
     document.onclick = (e: MouseEvent) => {
@@ -122,7 +108,7 @@ const Nav: React.FC<NavProps> = ({ onLoginButtonClick }) => {
                   onClick={handleLogin}
                   className="flex items-center justify-center gap-x-1 py-2 px-4 text-white font-medium bg-gray-800 hover:bg-gray-700 active:bg-gray-900 rounded-full md:inline-flex"
                 >
-                  Sign in
+                  Log in
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 20 20"

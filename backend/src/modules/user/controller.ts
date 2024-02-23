@@ -48,6 +48,7 @@ async function handleRegister(req: Request, res: Response) {
   const schema = z.object({
     email: z.string().email(),
     password: z.string().min(6),
+    name: z.string().min(3),
   })
 
   try {
