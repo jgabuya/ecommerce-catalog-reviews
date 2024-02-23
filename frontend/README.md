@@ -14,6 +14,7 @@ The following functionalities are implemented:
 
 - Next.js (page-based routing)
 - [swr](https://github.com/vercel/swr) for data fetching
+- Tailwind CSS
 
 ## Structure
 
