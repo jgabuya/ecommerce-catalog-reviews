@@ -1,19 +1,28 @@
 import { ProductService } from './service'
 import { Store } from './store'
-import { Product, CreateProductPayload, UpdateProductPayload } from './types'
+import {
+  Product,
+  CreateProductPayload,
+  UpdateProductPayload,
+  ProductWithCategoryAndAverageRating,
+} from './types'
 import { omit } from 'lodash'
 
 describe('ProductService', () => {
   let store: jest.Mocked<Store>
   let service: ProductService
 
-  const mockProduct: Product = {
+  const mockProduct: ProductWithCategoryAndAverageRating = {
     id: '1',
     name: 'Test Product',
     description: 'Test Description',
     price: 100.0,
     stock: 10,
     categoryId: '1',
+    category: {
+      id: '1',
+    },
+    averageRating: 3,
     createdAt: new Date(),
     updatedAt: new Date(),
   }

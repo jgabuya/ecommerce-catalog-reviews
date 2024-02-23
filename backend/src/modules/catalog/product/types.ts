@@ -1,4 +1,4 @@
-import { Product, Prisma } from '@prisma/client'
+import { Product, ProductCategory } from '@prisma/client'
 
 export type CreateProductPayload = Omit<
   Product,
@@ -10,12 +10,9 @@ export type UpdateProductPayload = Omit<
   'createdAt' | 'updatedAt' | 'averageRating'
 >
 
-type WithCategory = Prisma.ProductGetPayload<{
-  include: { category: true }
-}>
-
-export type ProductWithCategory = Omit<WithCategory, 'category'> & {
-  category: Partial<WithCategory['category']>
+export type ProductWithCategoryAndAverageRating = Product & {
+  category: Partial<ProductCategory>
+  averageRating: number
 }
 
 export { Product }

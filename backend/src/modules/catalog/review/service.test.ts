@@ -5,6 +5,7 @@ import {
   CreateProductReviewPayload,
   UpdateProductReviewPayload,
 } from './types'
+import { ProductWithCategoryAndAverageRating } from '../product/types'
 import { omit } from 'lodash'
 
 describe('ProductReviewService', () => {
@@ -56,24 +57,33 @@ describe('ProductReviewService', () => {
   const mockUser = {
     id: '1',
     email: 'test@mail.com',
+    name: 'Peter',
     createdAt: new Date(),
     updatedAt: new Date(),
     password: 'hashed-password',
+  }
+
+  const mockProduct: ProductWithCategoryAndAverageRating = {
+    id: '1',
+    name: 'Test Product',
+    description: 'Test Description',
+    price: 100.0,
+    stock: 10,
+    categoryId: '1',
+    category: {
+      id: '1',
+    },
+    averageRating: 3,
+    createdAt: new Date(),
+    updatedAt: new Date(),
   }
 
   beforeEach(() => {
     store = {
       create: jest.fn().mockResolvedValue(mockProductReviews[0]),
       findMany: jest.fn().mockResolvedValue(mockProductReviews),
-      findOne: jest
-        .fn()
-        .mockImplementation(
-          async (id: string): Promise<ProductReview | null> => {
-            return Promise.resolve(
-              mockProductReviews.find((review) => id === review.id) || null,
-            )
-          },
-        ),
+      findOne: jest.fn(),
+      findByProductAndUserIds: jest.fn(),
       update: jest.fn().mockResolvedValue(mockProductReviews[0]),
       delete: jest.fn(),
     }
@@ -97,95 +107,67 @@ describe('ProductReviewService', () => {
 
   describe('create', () => {
     it('should create a review', async () => {
-      const mockProductPayload = omit(mockProductReviews[0], [
+      const mockPayload = omit(mockProductReviews[0], [
         'id',
         'createdAt',
         'updatedAt',
       ])
 
-      const product: CreateProductReviewPayload = mockProductPayload
+      const product: CreateProductReviewPayload = mockPayload
 
-      jest.spyOn(service.productService, 'findOne').mockResolvedValue({
-        id: '1',
-        name: 'Test Product',
-        description: 'Test Description',
-        price: 100,
-        stock: 10,
-        categoryId: '1',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      })
-
+      jest
+        .spyOn(service.productService, 'findOne')
+        .mockResolvedValue(mockProduct)
       jest.spyOn(service.userService, 'findById').mockResolvedValue(mockUser)
-      jest.spyOn(service.store, 'findMany').mockResolvedValue([])
 
       await service.create(product)
       expect(store.create).toHaveBeenCalledWith(product)
     })
 
     it('should not create a review if the given productId is not found', async () => {
-      const mockProductPayload = omit(mockProductReviews[0], [
-        'id',
-        'createdAt',
-        'updatedAt',
-      ])
+      const mockPayload: CreateProductReviewPayload = omit(
+        mockProductReviews[0],
+        ['id', 'createdAt', 'updatedAt'],
+      )
 
-      const product: CreateProductReviewPayload = mockProductPayload
-
+      jest.spyOn(service.userService, 'findById').mockResolvedValue(mockUser)
       jest.spyOn(service.productService, 'findOne').mockResolvedValue(null)
 
-      await expect(service.create(product)).rejects.toThrow()
+      await expect(service.create(mockPayload)).rejects.toThrow()
     })
 
     it('should not create a review if the given userId is not found', async () => {
-      const mockProductPayload = omit(mockProductReviews[0], [
-        'id',
-        'createdAt',
-        'updatedAt',
-      ])
+      const mockPayload: CreateProductReviewPayload = omit(
+        mockProductReviews[0],
+        ['id', 'createdAt', 'updatedAt'],
+      )
 
-      const product: CreateProductReviewPayload = mockProductPayload
-
-      jest.spyOn(service.productService, 'findOne').mockResolvedValue({
-        id: '1',
-        name: 'Test Product',
-        description: 'Test Description',
-        price: 100,
-        stock: 10,
-        categoryId: '1',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      })
+      jest
+        .spyOn(service.productService, 'findOne')
+        .mockResolvedValue(mockProduct)
 
       jest.spyOn(service.userService, 'findById').mockResolvedValue(null)
 
-      await expect(service.create(product)).rejects.toThrow()
+      await expect(service.create(mockPayload)).rejects.toThrow()
     })
 
     it('should not create a review if the user already reviewed the product', async () => {
-      const mockProductPayload = omit(mockProductReviews[0], [
+      const mockPayload = omit(mockProductReviews[0], [
         'id',
         'createdAt',
         'updatedAt',
       ])
 
-      const product: CreateProductReviewPayload = mockProductPayload
+      const product: CreateProductReviewPayload = mockPayload
 
-      jest.spyOn(service.productService, 'findOne').mockResolvedValue({
-        id: '1',
-        name: 'Test Product',
-        description: 'Test Description',
-        price: 100,
-        stock: 10,
-        categoryId: '1',
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      })
+      jest
+        .spyOn(service.productService, 'findOne')
+        .mockResolvedValue(mockProduct)
 
       jest.spyOn(service.userService, 'findById').mockResolvedValue(mockUser)
       jest
-        .spyOn(service.store, 'findMany')
-        .mockResolvedValue([mockProductReviews[0]])
+        .spyOn(service.store, 'findByProductAndUserIds')
+        .mockResolvedValue(mockProductReviews[0])
 
       await expect(service.create(product)).rejects.toThrow()
     })
@@ -217,18 +199,22 @@ describe('ProductReviewService', () => {
         'productId',
       ])
 
+      jest
+        .spyOn(service.store, 'findOne')
+        .mockResolvedValue(mockProductReviews[0])
+
       await service.update(review, mockUser)
       expect(store.update).toHaveBeenCalledWith(review)
     })
 
     it('should not update a review if the given id is not found', async () => {
-      const review: UpdateProductReviewPayload = omit(
-        {
-          ...mockProductReviews[0],
-          id: 'non-existing-id',
-        },
-        ['createdAt', 'updatedAt'],
-      )
+      const review: UpdateProductReviewPayload = omit(mockProductReviews[0], [
+        'createdAt',
+        'updatedAt',
+        'productId',
+      ])
+
+      jest.spyOn(service.store, 'findOne').mockResolvedValue(null)
 
       await expect(service.update(review, mockUser)).rejects.toThrow()
     })
@@ -236,12 +222,20 @@ describe('ProductReviewService', () => {
 
   it('should delete a review', async () => {
     const id = '1'
+
+    jest
+      .spyOn(service.store, 'findOne')
+      .mockResolvedValue(mockProductReviews[0])
+
     await service.delete(id)
     expect(store.delete).toHaveBeenCalledWith(id)
   })
 
   it('should not delete a review if the given id is not found', async () => {
     const id = 'non-existing-id'
+
+    jest.spyOn(service.store, 'findOne').mockResolvedValue(null)
+
     await expect(service.delete(id)).rejects.toThrow()
   })
 })

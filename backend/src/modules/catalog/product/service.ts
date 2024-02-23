@@ -2,15 +2,15 @@ import {
   Product,
   CreateProductPayload,
   UpdateProductPayload,
-  ProductWithCategory,
+  ProductWithCategoryAndAverageRating,
 } from './types'
 import { Store } from './store'
 
 // extract an interface from ProductService
 export interface ProductServiceInterface {
   create(product: CreateProductPayload): Promise<Product>
-  findAll(): Promise<ProductWithCategory[]>
-  findOne(id: string): Promise<ProductWithCategory | null>
+  findAll(): Promise<ProductWithCategoryAndAverageRating[]>
+  findOne(id: string): Promise<ProductWithCategoryAndAverageRating | null>
   update(product: UpdateProductPayload): Promise<Product>
   delete(id: string): Promise<boolean>
 }
@@ -26,11 +26,13 @@ export class ProductService implements ProductServiceInterface {
     return await this.store.create(product)
   }
 
-  async findAll(): Promise<ProductWithCategory[]> {
+  async findAll(): Promise<ProductWithCategoryAndAverageRating[]> {
     return await this.store.findAll()
   }
 
-  async findOne(id: string): Promise<ProductWithCategory | null> {
+  async findOne(
+    id: string,
+  ): Promise<ProductWithCategoryAndAverageRating | null> {
     return await this.store.findOne(id)
   }
 
