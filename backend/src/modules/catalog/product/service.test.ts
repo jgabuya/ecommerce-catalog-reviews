@@ -2,11 +2,11 @@ import { ProductService } from './service'
 import { Store } from './store'
 import {
   Product,
-  CreateProductPayload,
-  UpdateProductPayload,
+  ProductCreatePayload,
+  ProductUpdatePayload,
   ProductWithCategoryAndAverageRating,
 } from './types'
-import { omit } from 'lodash'
+import { pick } from 'lodash'
 
 describe('ProductService', () => {
   let store: jest.Mocked<Store>
@@ -51,12 +51,17 @@ describe('ProductService', () => {
   })
 
   it('should create a product', async () => {
-    const mockProductPayload = omit(mockProduct, [
-      'id',
-      'createdAt',
-      'updatedAt',
-    ])
-    const product: CreateProductPayload = mockProductPayload
+    const mockProductPayload = {
+      ...pick(mockProduct, ['id', 'name', 'description', 'price', 'stock']),
+      category: {
+        create: {
+          id: '1',
+          name: 'test category',
+        },
+      },
+    }
+
+    const product: ProductCreatePayload = mockProductPayload
 
     await service.create(product)
     expect(store.create).toHaveBeenCalledWith(product)
@@ -74,9 +79,10 @@ describe('ProductService', () => {
   })
 
   it('should update a product', async () => {
-    const product: UpdateProductPayload = omit(mockProduct, [
-      'createdAt',
-      'updatedAt',
+    const product: ProductUpdatePayload = pick(mockProduct, [
+      'id',
+      'name',
+      'description',
     ])
 
     await service.update(product)
@@ -84,13 +90,10 @@ describe('ProductService', () => {
   })
 
   it('should not update a product if the given id is not found', async () => {
-    const product: UpdateProductPayload = omit(
-      {
-        ...mockProduct,
-        id: 'non-existing-id',
-      },
-      ['createdAt', 'updatedAt'],
-    )
+    const product: ProductUpdatePayload = {
+      ...pick(mockProduct, ['name', 'description']),
+      id: 'non-existing-id',
+    }
 
     await expect(service.update(product)).rejects.toThrow()
   })

@@ -2,23 +2,21 @@ import { prismaClient } from '../../../../prisma/client'
 import { withCache, clearCache } from '../../../utils/redis'
 import {
   Product,
-  CreateProductPayload,
-  UpdateProductPayload,
+  ProductCreatePayload,
+  ProductUpdatePayload,
   ProductWithCategoryAndAverageRating,
 } from './types'
 import { omit } from 'lodash'
 interface Store {
-  create(
-    product: Omit<Product, 'id' | 'createdAt' | 'updatedAt' | 'averageRating'>,
-  ): Promise<Product>
+  create(product: ProductCreatePayload): Promise<Product>
   findAll(): Promise<ProductWithCategoryAndAverageRating[]>
   findOne(id: string): Promise<ProductWithCategoryAndAverageRating | null>
-  update(product: UpdateProductPayload): Promise<Product>
+  update(product: ProductUpdatePayload): Promise<Product>
   delete(id: string): Promise<boolean>
 }
 
 class ProductStore implements Store {
-  async create(product: CreateProductPayload): Promise<Product> {
+  async create(product: ProductCreatePayload): Promise<Product> {
     return await prismaClient.product.create({
       data: {
         name: product.name,
@@ -27,7 +25,7 @@ class ProductStore implements Store {
         stock: product.stock,
         category: {
           connect: {
-            id: product.categoryId,
+            id: product.category.connect?.id,
           },
         },
       },
@@ -89,7 +87,7 @@ class ProductStore implements Store {
     })
   }
 
-  async update(product: UpdateProductPayload): Promise<Product> {
+  async update(product: ProductUpdatePayload): Promise<Product> {
     const data = await prismaClient.product.update({
       where: {
         id: product.id,

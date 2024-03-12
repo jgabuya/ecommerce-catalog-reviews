@@ -1,17 +1,17 @@
 import {
   Product,
-  CreateProductPayload,
-  UpdateProductPayload,
+  ProductCreatePayload,
+  ProductUpdatePayload,
   ProductWithCategoryAndAverageRating,
 } from './types'
 import { Store } from './store'
 
 // extract an interface from ProductService
 export interface ProductServiceInterface {
-  create(product: CreateProductPayload): Promise<Product>
+  create(product: ProductCreatePayload): Promise<Product>
   findAll(): Promise<ProductWithCategoryAndAverageRating[]>
   findOne(id: string): Promise<ProductWithCategoryAndAverageRating | null>
-  update(product: UpdateProductPayload): Promise<Product>
+  update(product: ProductUpdatePayload): Promise<Product>
   delete(id: string): Promise<boolean>
 }
 
@@ -22,7 +22,7 @@ export class ProductService implements ProductServiceInterface {
     this.store = store
   }
 
-  async create(product: CreateProductPayload): Promise<Product> {
+  async create(product: ProductCreatePayload): Promise<Product> {
     return await this.store.create(product)
   }
 
@@ -36,8 +36,8 @@ export class ProductService implements ProductServiceInterface {
     return await this.store.findOne(id)
   }
 
-  async update(product: UpdateProductPayload): Promise<Product> {
-    const existingProduct = await this.store.findOne(product.id)
+  async update(product: ProductUpdatePayload): Promise<Product> {
+    const existingProduct = await this.store.findOne(product.id as string)
 
     if (!existingProduct) {
       throw new Error(`Product with id ${product.id} not found`)
